@@ -20,7 +20,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A part of a name.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "NamePart")]
     public sealed partial class NamePart : Gx.Common.ExtensibleData
     {

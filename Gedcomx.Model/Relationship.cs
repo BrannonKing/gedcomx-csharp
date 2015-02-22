@@ -20,7 +20,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A relationship between two or more persons.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Relationship")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "relationship")]
     public partial class Relationship : Gx.Conclusion.Subject

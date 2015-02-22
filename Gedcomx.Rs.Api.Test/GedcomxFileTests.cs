@@ -19,8 +19,7 @@ namespace Gedcomx.Rs.Api.Test
         public void TestReadingJarFile()
         {
             var file = TestBacking.WriteBytesToDisk(Resources.SampleGEDX);
-            var fi = new FileInfo(file);
-            using (GedcomxFile test = new GedcomxFile(fi))
+            using (GedcomxFile test = new GedcomxFile(file))
             {
                 Assert.IsNotNull(test);
                 Assert.IsNotNull(test.Attributes);
@@ -114,8 +113,7 @@ namespace Gedcomx.Rs.Api.Test
         public void TestFileReading()
         {
             var file = TestBacking.WriteBytesToDisk(Resources.SampleGEDX);
-            var fi = new FileInfo(file);
-            using (GedcomxFile test = new GedcomxFile(fi))
+            using (GedcomxFile test = new GedcomxFile(file))
             {
                 Assert.AreEqual(4, test.Entries.Count());
 

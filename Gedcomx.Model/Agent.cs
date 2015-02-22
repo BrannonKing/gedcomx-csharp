@@ -22,7 +22,6 @@ namespace Gx.Agent
     ///  An agent, e.g. person, organization, or group. In genealogical research, an agent often
     ///  takes the role of a contributor.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Agent")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "agent")]
     public partial class Agent : Gx.Links.HypermediaEnabledData

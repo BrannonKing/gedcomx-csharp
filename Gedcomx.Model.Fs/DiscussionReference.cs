@@ -16,7 +16,6 @@ namespace Gx.Fs.Tree
     ///  
     /// </summary>
     // TODO: Create attribute equivalent to JsonWrapper (for each call to FindExtensionsOfType<T>() and FindExtensionOfType<T>())
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "DiscussionReference")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "discussion-reference")]
     public sealed partial class DiscussionReference : Gx.Links.HypermediaEnabledData

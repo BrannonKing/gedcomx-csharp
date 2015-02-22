@@ -10,7 +10,6 @@ namespace Gedcomx.Date
     /// <summary>
     /// Represents exceptions when working with GEDCOM X dates.
     /// </summary>
-    [Serializable]
     public class GedcomxDateException : Exception
     {
         /// <summary>
@@ -27,16 +26,6 @@ namespace Gedcomx.Date
         /// <param name="message">The message that describes the error.</param>
         public GedcomxDateException(string message)
             : base(message)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GedcomxDateException"/> class.
-        /// </summary>
-        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected GedcomxDateException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
         {
         }
 

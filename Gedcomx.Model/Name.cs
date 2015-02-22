@@ -19,7 +19,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A name conclusion.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Name")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "name")]
     public partial class Name : Gx.Conclusion.Conclusion

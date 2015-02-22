@@ -14,7 +14,6 @@ namespace Gx.Fs
     /// <summary>
     ///  
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "HealthConfig")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "healthConfig")]
     public partial class HealthConfig

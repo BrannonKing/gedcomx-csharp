@@ -20,7 +20,6 @@ namespace Gx.Atom
     /// <summary>
     ///  The &quot;atom:entry&quot; element represents an individual entry, acting as a container for metadata and data associated with the entry.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.w3.org/2005/Atom", TypeName = "Entry")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.w3.org/2005/Atom", ElementName = "entry")]
     public partial class Entry : Gx.Atom.ExtensibleElement, ISupportsLinks
@@ -41,7 +40,7 @@ namespace Gx.Atom
         private string _title;
         private DateTime? _updated;
         private bool _updatedSpecified;
-        private System.Xml.XmlAttribute[] _otherAttributes;
+        //private System.Xml.XmlAttribute[] _otherAttributes;
         /// <summary>
         ///  The author of the entry.
         /// </summary>
@@ -321,18 +320,18 @@ namespace Gx.Atom
         /// <summary>
         ///  The other attributes.
         /// </summary>
-        [System.Xml.Serialization.XmlAnyAttributeAttribute()]
-        public System.Xml.XmlAttribute[] OtherAttributes
-        {
-            get
-            {
-                return this._otherAttributes;
-            }
-            set
-            {
-                this._otherAttributes = value;
-            }
-        }
+        //[System.Xml.Serialization.XmlAnyAttributeAttribute()]
+        //public System.Xml.XmlAttribute[] OtherAttributes
+        //{
+        //    get
+        //    {
+        //        return this._otherAttributes;
+        //    }
+        //    set
+        //    {
+        //        this._otherAttributes = value;
+        //    }
+        //}
 
         /// <summary>
         /// Add a hypermedia link. Links are not specified by GEDCOM X core, but as extension elements by GEDCOM X RS.

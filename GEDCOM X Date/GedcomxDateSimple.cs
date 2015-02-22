@@ -188,8 +188,9 @@ namespace Gedcomx.Date
 
             // Always initialize the Timezone to the local offset.
             // It may be overridden if set
-            TimeZone tz = TimeZone.CurrentTimeZone;
-            double offsetInMillis = tz.GetUtcOffset(DateTime.Now).TotalMilliseconds;
+	        var now = DateTime.Now;
+	        var utcNow = now.ToUniversalTime();
+            double offsetInMillis = (now - utcNow).TotalMilliseconds;
             tzHours = Convert.ToInt32(offsetInMillis / 3600000);
             tzMinutes = Convert.ToInt32((offsetInMillis / 60000) % 60);
 

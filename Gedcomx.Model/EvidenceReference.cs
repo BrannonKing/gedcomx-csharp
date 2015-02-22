@@ -15,7 +15,6 @@ namespace Gx.Common
     /// <summary>
     ///  A reference to a resource that is being used as evidence.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "EvidenceReference")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "evidenceReference")]
     public sealed partial class EvidenceReference : Gx.Links.HypermediaEnabledData, IAttributable

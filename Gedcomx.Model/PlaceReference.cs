@@ -17,7 +17,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A reference to genealogical place.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "PlaceReference")]
     public partial class PlaceReference : Gx.Common.ExtensibleData
     {

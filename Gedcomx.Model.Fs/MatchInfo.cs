@@ -15,7 +15,6 @@ namespace Gx.Fs.Tree
     /// <summary>
     ///  Information about a match.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "MatchInfo")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "matchInfo")]
     public partial class MatchInfo

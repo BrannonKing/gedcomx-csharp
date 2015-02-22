@@ -17,7 +17,6 @@ namespace Gx.Source
     /// <summary>
     ///  A description of the coverage of a resource.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Coverage")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "coverage")]
     public partial class Coverage : Gx.Links.HypermediaEnabledData

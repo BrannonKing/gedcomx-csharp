@@ -19,7 +19,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A genealogical conclusion.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Conclusion")]
     public abstract partial class Conclusion : Gx.Links.HypermediaEnabledData, IAttributable
     {

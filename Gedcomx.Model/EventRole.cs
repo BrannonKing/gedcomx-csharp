@@ -18,7 +18,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A role that a specific person plays in an event.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "EventRole")]
     public partial class EventRole : Gx.Conclusion.Conclusion
     {

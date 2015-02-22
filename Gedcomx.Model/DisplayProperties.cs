@@ -19,7 +19,6 @@ namespace Gx.Conclusion
     ///  a Web-based application. All display properties are provided in the default locale for the current
     ///  application context and are NOT considered canonical for the purposes of data exchange.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "DisplayProperties")]
     public partial class DisplayProperties : Gx.Common.ExtensibleData
     {

@@ -19,7 +19,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A gender conclusion.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Gender")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "gender")]
     public partial class Gender : Gx.Conclusion.Conclusion

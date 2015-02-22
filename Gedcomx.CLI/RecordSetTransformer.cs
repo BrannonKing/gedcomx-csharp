@@ -44,6 +44,36 @@ namespace Gx.CLI
             
         }
 
+
+        /// <summary>
+        /// Builds a table of records for a given record set.
+        /// </summary>
+        /// <returns>
+        /// The table of records.
+        /// </returns>
+        /// <param name='recordSet'>
+        /// The record set.
+        /// </param>
+        public static DataTable BuildTableOfRecords(RecordSet recordSet)
+        {
+            var table = new DataTable();
+            var values = new RecordHelper.FieldValueTableBuildingVisitor(recordSet);
+            foreach (string column in values.ColumnNames)
+            {
+                table.Columns.Add(column, typeof(string));
+            }
+            foreach (Dictionary<string, string> fieldSet in values.Rows)
+            {
+                DataRow row = table.NewRow();
+                foreach (KeyValuePair<string, string> entry in fieldSet)
+                {
+                    row[entry.Key] = string.Format("\"{0}\"", entry.Value.Replace("\"", "\\\""));
+                }
+                table.Rows.Add(row);
+            }
+            return table;
+        }
+
         /// <summary>
         /// Reads a record set file and outputs a CSV.
         /// </summary>
@@ -60,7 +90,7 @@ namespace Gx.CLI
         {
             var serializer = new XmlSerializer (typeof(RecordSet));
             var records = (RecordSet)serializer.Deserialize (inStream);
-            var table = RecordHelper.BuildTableOfRecords (records);
+            var table = BuildTableOfRecords (records);
 
             if (excludeOrigColumns)
             {

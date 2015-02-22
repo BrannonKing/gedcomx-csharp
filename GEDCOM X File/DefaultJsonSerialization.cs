@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Gedcomx.File
 {
@@ -128,7 +129,7 @@ namespace Gedcomx.File
             {
                 var type = typeof(T);
 
-                if (type.IsPrimitive || type == typeof(String))
+                if (type.GetTypeInfo().IsPrimitive || type == typeof(String))
                 {
                     result = (T)Convert.ChangeType(reader.ReadToEnd(), type);
                 }

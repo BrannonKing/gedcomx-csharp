@@ -18,7 +18,6 @@ namespace Gx.Source
     /// <summary>
     ///  An attributable reference to a description of a source.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "SourceReference")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "sourceReference")]
     public partial class SourceReference : Gx.Links.HypermediaEnabledData, IAttributable

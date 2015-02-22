@@ -17,7 +17,6 @@ namespace Gx.Fs.Discussions
     /// <summary>
     ///  
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "Comment")]
     public partial class Comment : Gx.Links.HypermediaEnabledData
     {

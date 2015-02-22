@@ -14,7 +14,6 @@ namespace Gx.Records
     /// <summary>
     ///  &lt;p&gt;A facet value is the value that is used by a facet to group related resources.&lt;/p&gt;
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "FacetValue")]
     public partial class FacetValue : Gx.Links.HypermediaEnabledData
     {

@@ -14,7 +14,6 @@ namespace Gx.Atom
     /// <summary>
     ///  conveys information about a category associated with an entry or feed.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.w3.org/2005/Atom", TypeName = "Category")]
     public sealed partial class Category : Gx.Atom.CommonAttributes
     {

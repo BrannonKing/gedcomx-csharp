@@ -8,6 +8,7 @@ using Gx.Records;
 using Gx.Source;
 using Gx.Types;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Gx.Util
 {
@@ -19,7 +20,7 @@ namespace Gx.Util
         /// <summary>
         /// The context stack of objects that are currently being visited.
         /// </summary>
-        protected readonly Stack contextStack = new Stack();
+        protected readonly Stack<Object> contextStack = new Stack<Object>();
 
         /// <summary>
         /// Visits the record set.

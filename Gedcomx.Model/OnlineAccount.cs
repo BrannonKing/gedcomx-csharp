@@ -15,7 +15,6 @@ namespace Gx.Agent
     /// <summary>
     ///  An online account for a web application.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "OnlineAccount")]
     public partial class OnlineAccount : Gx.Common.ExtensibleData
     {

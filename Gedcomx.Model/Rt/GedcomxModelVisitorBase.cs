@@ -14,7 +14,7 @@ namespace Gedcomx.Model.Rt
 {
     public class GedcomxModelVisitorBase : IGedcomxModelVisitor
     {
-        protected readonly Stack contextStack = new Stack();
+        protected readonly Stack<Object> contextStack = new Stack<Object>();
 
         public virtual void VisitGedcomx(Gx.Gedcomx gx)
         {
@@ -513,14 +513,6 @@ namespace Gedcomx.Model.Rt
         public virtual void VisitEvidenceReference(EvidenceReference evidenceReference)
         {
             //no-op
-        }
-
-        public Stack ContextStack
-        {
-            get
-            {
-                return contextStack;
-            }
         }
     }
 }

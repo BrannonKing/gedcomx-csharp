@@ -16,7 +16,6 @@ namespace Gx.Records
     /// <summary>
     ///  A description of the content of a collection by resource type.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "CollectionContent")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "collectionContent")]
     public partial class CollectionContent : Gx.Links.HypermediaEnabledData

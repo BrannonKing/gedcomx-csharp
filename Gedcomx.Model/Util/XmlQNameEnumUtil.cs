@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
@@ -12,7 +13,7 @@ namespace Gedcomx.Model.Util
     {
         public static String GetNameValue(Enum value)
         {
-            var attribute = (XmlEnumAttribute)Attribute.GetCustomAttribute(value.GetType().GetField(value.ToString()), typeof(XmlEnumAttribute));
+            var attribute = value.GetType().GetTypeInfo().GetDeclaredField(value.ToString()).GetCustomAttribute<XmlEnumAttribute>();
             String result;
 
             if (attribute != null)
@@ -29,7 +30,8 @@ namespace Gedcomx.Model.Util
 
         public static T GetEnumValue<T>(String value)
         {
-            var found = typeof(T).GetEnumValues().Cast<Enum>().FirstOrDefault(x => GetNameValue(x) == value);
+
+            var found = Enum.GetValues(typeof(T)).Cast<Enum>().FirstOrDefault(x => GetNameValue(x) == value);
             T result = default(T);
 
             if (found is T)

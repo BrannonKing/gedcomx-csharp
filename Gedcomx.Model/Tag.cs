@@ -13,7 +13,6 @@ namespace Gx.Source
     /// <summary>
     ///  A tag in the FamilySearch system.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "Tag")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "tag")]
     public partial class Tag

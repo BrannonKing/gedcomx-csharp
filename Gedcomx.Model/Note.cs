@@ -15,7 +15,6 @@ namespace Gx.Common
     /// <summary>
     ///  A note about a genealogical resource (e.g. conclusion or source).
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Note")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "note")]
     public partial class Note : Gx.Links.HypermediaEnabledData, IAttributable

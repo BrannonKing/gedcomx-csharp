@@ -15,7 +15,6 @@ namespace Gx.Fs.Tree
     /// <summary>
     ///  Information about a change.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "ChangeInfo")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "changeInfo")]
     public partial class ChangeInfo

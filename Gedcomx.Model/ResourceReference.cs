@@ -14,7 +14,6 @@ namespace Gx.Common
     /// <summary>
     ///  A generic reference to a resource.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "ResourceReference")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "resourceReference")]
     public sealed partial class ResourceReference

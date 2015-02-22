@@ -17,7 +17,6 @@ namespace Gx.Source
     /// <summary>
     ///  Represents a source citation.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "SourceCitation")]
     public partial class SourceCitation : Gx.Links.HypermediaEnabledData
     {

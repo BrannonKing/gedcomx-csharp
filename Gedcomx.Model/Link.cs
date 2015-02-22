@@ -14,7 +14,6 @@ namespace Gx.Links
     /// <summary>
     ///  A hypermedia link, used to drive the state of a hypermedia-enabled genealogical data application.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Link")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "link")]
     public partial class Link

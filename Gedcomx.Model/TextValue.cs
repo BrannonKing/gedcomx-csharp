@@ -14,7 +14,6 @@ namespace Gx.Common
     /// <summary>
     ///  An element representing a text value that may be in a specific language.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "TextValue")]
     public partial class TextValue
     {

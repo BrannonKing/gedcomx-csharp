@@ -15,7 +15,6 @@ namespace Gx.Fs.Tree
     /// <summary>
     ///  
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "MergeAnalysis")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "mergeAnalysis")]
     public partial class MergeAnalysis

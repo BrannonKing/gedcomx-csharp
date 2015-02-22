@@ -16,7 +16,6 @@ namespace Gx.Atom
     /// <summary>
     ///  
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.w3.org/2005/Atom", TypeName = "ExtensibleElement")]
     public abstract partial class ExtensibleElement : Gx.Atom.CommonAttributes
     {
@@ -70,7 +69,7 @@ namespace Gx.Atom
             {
                 foreach (Object extension in _extensionElementsXml)
                 {
-                    if (typeof(T).IsAssignableFrom(extension.GetType()))
+                    if (extension is T)
                     {
                         return (T)extension;
                     }

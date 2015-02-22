@@ -17,7 +17,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  An identifier for a resource.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Identifier")]
     [JsonConverter(typeof(JsonIdentifiersConverter))]
     public sealed partial class Identifier

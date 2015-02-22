@@ -16,7 +16,6 @@ namespace Gx.Records
     /// <summary>
     ///  A way a field is to be displayed to a user.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "FieldValueDescriptor")]
     public partial class FieldValueDescriptor : Gx.Links.HypermediaEnabledData
     {

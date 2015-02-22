@@ -14,7 +14,6 @@ namespace Gx.Atom
     /// <summary>
     ///  
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.w3.org/2005/Atom", TypeName = "Content")]
     public sealed partial class Content
     {

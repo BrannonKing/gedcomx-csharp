@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PCLStorage;
 
 namespace Gedcomx.File
 {
@@ -13,7 +14,6 @@ namespace Gedcomx.File
     /// </summary>
     public class GedcomxFile : IDisposable
     {
-        private readonly FileInfo gedxFile;
         private readonly ZipArchive gedxArc;
         private readonly IGedcomxEntryDeserializer deserializer;
         private readonly ManifestAttributes attributes;
@@ -21,12 +21,12 @@ namespace Gedcomx.File
         /// <summary>
         /// Initializes a new instance of the <see cref="GedcomxFile"/> class.
         /// </summary>
-        /// <param name="gedxFile">The GEDCOM X file.</param>
+        /// <param name="filenameAndPath">The GEDCOM X file.</param>
         /// <param name="deserializer">The deserializer to use for deserializing data streams from the file.</param>
-        public GedcomxFile(FileInfo gedxFile, IGedcomxEntryDeserializer deserializer)
+        public GedcomxFile(string filenameAndPath, IGedcomxEntryDeserializer deserializer)
         {
-            this.gedxFile = gedxFile;
-            this.gedxArc = ZipFile.OpenRead(gedxFile.FullName);
+            var file = PCLStorage.FileSystem.Current.GetFileFromPathAsync(filenameAndPath).Result;
+            this.gedxArc = new ZipArchive(file.OpenAsync(FileAccess.Read).Result, ZipArchiveMode.Read, false);
             this.deserializer = deserializer;
             this.attributes = ManifestAttributes.Parse(this.gedxArc);
         }
@@ -34,10 +34,10 @@ namespace Gedcomx.File
         /// <summary>
         /// Initializes a new instance of the <see cref="GedcomxFile"/> class. Creates a new <c>GedcomxFile</c> to read from the specified <c>zipFile</c>.
         /// </summary>
-        /// <param name="zipFile">The zip file to be read.</param>
+        /// <param name="filenameAndPath">The zip file to be read.</param>
         /// <param name="types">The types the serializer is to know about for serialization.</param>
-        public GedcomxFile(FileInfo zipFile, params Type[] types)
-            : this(zipFile, new DefaultXmlSerialization(types))
+        public GedcomxFile(string filenameAndPath, params Type[] types)
+            : this(filenameAndPath, new DefaultXmlSerialization(types))
         {
         }
 

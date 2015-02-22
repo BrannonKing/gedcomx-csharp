@@ -15,7 +15,6 @@ namespace Gx.Records
     /// <summary>
     ///  A descriptor for a common set of records.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "RecordDescriptor")]
     public partial class RecordDescriptor : Gx.Links.HypermediaEnabledData
     {

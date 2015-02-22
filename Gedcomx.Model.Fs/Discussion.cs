@@ -19,7 +19,6 @@ namespace Gx.Fs.Discussions
     /// <summary>
     ///  A discussion.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "Discussion")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "discussion")]
     public partial class Discussion : Gx.Links.HypermediaEnabledData

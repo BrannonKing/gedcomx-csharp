@@ -23,7 +23,6 @@ namespace Gx.Fs
     ///  data formats are extensions of the &lt;a href=&quot;http://gedcomx.org&quot;&gt;GEDCOM X&lt;/a&gt; media types and provide concepts and data types
     ///  that are specific to FamilySearch and therefore haven't been adopted into a formal, more general specification.&lt;/p&gt;
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "FamilySearch")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "familysearch")]
     public partial class FamilySearchPlatform : Gx.Gedcomx

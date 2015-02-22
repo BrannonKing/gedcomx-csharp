@@ -18,7 +18,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A form of a name.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "NameForm")]
     public partial class NameForm : Gx.Common.ExtensibleData
     {

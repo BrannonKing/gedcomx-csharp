@@ -14,7 +14,6 @@ namespace Gx.Atom
     /// <summary>
     ///  A Person construct is an element that describes a person, corporation, or similar entity
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.w3.org/2005/Atom", TypeName = "Person")]
     public sealed partial class Person : Gx.Atom.ExtensibleElement
     {

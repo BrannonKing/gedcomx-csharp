@@ -17,7 +17,6 @@ namespace Gx.Common
     /// <summary>
     ///  A set of data that supports extension elements.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "ExtensibleData")]
     public abstract partial class ExtensibleData
     {
@@ -108,7 +107,7 @@ namespace Gx.Common
             {
                 foreach (Object extension in _extensionElementsXml)
                 {
-                    if (typeof(T).IsAssignableFrom(extension.GetType()))
+                    if (extension is T)
                     {
                         ext.Add((T)extension);
                     }

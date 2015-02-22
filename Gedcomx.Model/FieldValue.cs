@@ -17,7 +17,6 @@ namespace Gx.Records
     /// <summary>
     ///  An element representing a value in a record field.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "FieldValue")]
     public sealed partial class FieldValue : Gx.Conclusion.Conclusion
     {

@@ -15,7 +15,6 @@ namespace Gx.Fs.Users
     /// <summary>
     ///  Family Tree User Service User
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "User")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "user")]
     public partial class User : Gx.Links.HypermediaEnabledData

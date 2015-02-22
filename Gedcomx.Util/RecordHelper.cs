@@ -5,7 +5,6 @@ using Gx.Types;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Data;
 using System.Linq;
 
 namespace Gx.Util
@@ -44,35 +43,6 @@ namespace Gx.Util
         public static ICollection<List<Field>> EnumerateCensusRecordFields(Gedcomx record)
         {
             return new CensusFieldGatheringVisitor(record).FieldsByPerson.Values;
-        }
-
-        /// <summary>
-        /// Builds a table of records for a given record set.
-        /// </summary>
-        /// <returns>
-        /// The table of records.
-        /// </returns>
-        /// <param name='recordSet'>
-        /// The record set.
-        /// </param>
-        public static DataTable BuildTableOfRecords(RecordSet recordSet)
-        {
-            var table = new DataTable();
-            var values = new FieldValueTableBuildingVisitor(recordSet);
-            foreach (string column in values.ColumnNames)
-            {
-                table.Columns.Add(column, typeof(string));
-            }
-            foreach (Dictionary<string, string> fieldSet in values.Rows)
-            {
-                DataRow row = table.NewRow();
-                foreach (KeyValuePair<string, string> entry in fieldSet)
-                {
-                    row[entry.Key] = string.Format("\"{0}\"", entry.Value.Replace("\"", "\\\""));
-                }
-                table.Rows.Add(row);
-            }
-            return table;
         }
 
         /// <summary>
@@ -121,7 +91,7 @@ namespace Gx.Util
         /// <summary>
         /// Visitor that gathers all the field values in a set of records by their ids.
         /// </summary>
-        private class FieldValueTableBuildingVisitor : GedcomxModelVisitorBase
+        public class FieldValueTableBuildingVisitor : GedcomxModelVisitorBase
         {
             private readonly HashSet<string> _columnNames = new HashSet<string>();
             private readonly List<Dictionary<string, string>> _rows = new List<Dictionary<string, string>>();

@@ -21,7 +21,6 @@ namespace Gx.Conclusion
     ///  and possibly its type, time period, and/or a geospatial description -- a description
     ///  of a place as a snapshot in time.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "PlaceDescription")]
     public partial class PlaceDescription : Gx.Conclusion.Subject
     {

@@ -22,7 +22,6 @@ namespace Gx.Source
     /// <summary>
     ///  Represents a description of a source.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "SourceDescription")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "sourceDescription")]
     public partial class SourceDescription : Gx.Links.HypermediaEnabledData, IAttributable

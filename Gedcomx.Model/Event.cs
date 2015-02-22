@@ -17,7 +17,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A historical event.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Event")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "event")]
     [Newtonsoft.Json.JsonObject("events")]

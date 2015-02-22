@@ -16,7 +16,6 @@ namespace Gx.Records
     /// <summary>
     ///  &lt;p&gt;A &lt;tt&gt;facet&lt;/tt&gt; is a logical grouping of resources by specific criteria, used for convenience in browsing a collection or a set of search results.&lt;/p&gt;
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Facet")]
     public partial class Facet : Gx.Links.HypermediaEnabledData
     {

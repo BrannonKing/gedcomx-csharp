@@ -18,7 +18,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A concluded genealogical date.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Date")]
     public partial class DateInfo : Gx.Common.ExtensibleData
     {

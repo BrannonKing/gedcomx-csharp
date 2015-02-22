@@ -14,7 +14,6 @@ namespace Gx.Source
     /// <summary>
     ///  Represents a citation field -- its name and value.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "CitationField")]
     public partial class CitationField
     {

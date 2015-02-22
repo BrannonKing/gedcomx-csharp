@@ -19,7 +19,6 @@ namespace Gx.Links
     /// <summary>
     ///  An data type that supports hypermedia controls (i.e. links).
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "HypermediaEnabledData")]
     public abstract partial class HypermediaEnabledData : Gx.Common.ExtensibleData, ISupportsLinks
     {

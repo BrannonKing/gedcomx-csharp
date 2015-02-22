@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 
 namespace Gedcomx.Model.Util
 {
@@ -13,7 +14,7 @@ namespace Gedcomx.Model.Util
     {
         public override bool CanConvert(Type objectType)
         {
-            return typeof(IList<Identifier>).IsAssignableFrom(objectType);
+            return typeof(IList<Identifier>).GetTypeInfo().IsAssignableFrom(objectType.GetTypeInfo());
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

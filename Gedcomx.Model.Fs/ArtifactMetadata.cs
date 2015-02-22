@@ -15,7 +15,6 @@ namespace Gx.Fs.Artifacts
     /// <summary>
     ///  FamilySearch-specific metadata about an artifact.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "ArtifactMetadata")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "artifactMetadata")]
     public partial class ArtifactMetadata

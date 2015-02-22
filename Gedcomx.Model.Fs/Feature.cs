@@ -15,7 +15,6 @@ namespace Gx.Fs
     /// <summary>
     ///  A description of a FamilySearch feature.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "FeatureSet")]
     public partial class Feature
     {

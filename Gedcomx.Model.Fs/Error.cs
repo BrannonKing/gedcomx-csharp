@@ -14,7 +14,6 @@ namespace Gx.Fs
     /// <summary>
     ///  A common representation of an error on the FamilySearch platform.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "Error")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "error")]
     public partial class Error

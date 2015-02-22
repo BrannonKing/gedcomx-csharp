@@ -18,7 +18,6 @@ namespace Gx.Fs.Tree
     /// <summary>
     ///  The FamilySearch-proprietary model for a relationship between a child and a pair of parents.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://familysearch.org/v1/", TypeName = "ChildAndParentsRelationship")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://familysearch.org/v1/", ElementName = "childAndParentsRelationship")]
     public partial class ChildAndParentsRelationship : Gx.Conclusion.Subject

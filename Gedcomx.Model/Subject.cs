@@ -25,7 +25,6 @@ namespace Gx.Conclusion
     ///  &lt;em&gt;conclusions&lt;/em&gt;, e.g. for a person: things like name, birth date, age, address, etc. We aggregate these supporting &lt;em&gt;conclusions&lt;/em&gt; to form an
     ///  apparently-unique identity by which we can distinguish our &lt;em&gt;subject&lt;/em&gt; from all other possible &lt;em&gt;subjects&lt;/em&gt;.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Subject")]
     public abstract partial class Subject : Gx.Conclusion.Conclusion, IAttributable
     {

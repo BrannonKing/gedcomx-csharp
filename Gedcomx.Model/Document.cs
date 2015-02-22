@@ -18,7 +18,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  An abstract document that contains derived (conclusionary) text -- for example, a transcription or researcher analysis.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Document")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "document")]
     [Newtonsoft.Json.JsonObject("documents")]

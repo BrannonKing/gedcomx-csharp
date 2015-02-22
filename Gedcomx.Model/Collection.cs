@@ -17,7 +17,6 @@ namespace Gx.Records
     /// <summary>
     ///  A collection of genealogical resources.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Collection")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "collection")]
     public partial class Collection : Gx.Links.HypermediaEnabledData, IAttributable

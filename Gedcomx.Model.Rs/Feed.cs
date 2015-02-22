@@ -24,7 +24,6 @@ namespace Gx.Atom
     ///  &lt;a href=&quot;http://tools.ietf.org/html/rfc4287#section-4&quot;&gt;RFC 4287&lt;/a&gt;. The JSON data format is specific to GEDCOM X and is a
     ///  translation to JSON from the XML.&lt;/p&gt;
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.w3.org/2005/Atom", TypeName = "Feed")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://www.w3.org/2005/Atom", ElementName = "feed")]
     public partial class Feed : Gx.Atom.ExtensibleElement, ISupportsLinks

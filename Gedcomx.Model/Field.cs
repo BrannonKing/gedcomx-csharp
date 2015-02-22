@@ -18,7 +18,6 @@ namespace Gx.Records
     /// <summary>
     ///  A field of a record.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Field")]
     public partial class Field : Gx.Links.HypermediaEnabledData
     {

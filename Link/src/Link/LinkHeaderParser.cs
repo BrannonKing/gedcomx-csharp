@@ -133,7 +133,8 @@ namespace Tavis
             link.Target = new Uri(BaseUrl, url);
             link.Relation = rel;
             link.Title = title_s ?? title;
-            extensions.ForEach(x => link.SetLinkExtension(x.Key, x.Value));
+            foreach(var x in extensions)
+                link.SetLinkExtension(x.Key, x.Value);
 
             if (!String.IsNullOrEmpty(type)) link.Type = MediaTypeHeaderValue.Parse(type);
             return link;

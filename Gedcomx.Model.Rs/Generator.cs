@@ -14,7 +14,6 @@ namespace Gx.Atom
     /// <summary>
     ///  identifies the agent used to generate a feed, for debugging and other purposes.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://www.w3.org/2005/Atom", TypeName = "Generator")]
     public sealed partial class Generator
     {

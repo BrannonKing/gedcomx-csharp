@@ -15,7 +15,6 @@ namespace Gx.Records
     /// <summary>
     ///  The GEDCOM X bulk record data formats are used to exchange bulk genealogical data sets, grouped into records.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "RecordSet")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "records")]
     public partial class RecordSet : Gx.Links.HypermediaEnabledData

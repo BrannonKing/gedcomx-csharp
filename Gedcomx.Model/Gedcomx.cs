@@ -39,7 +39,6 @@ namespace Gx
     ///  
     ///  &lt;p&gt;This documentation is provided as a non-normative reference guide.&lt;/p&gt;
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Gedcomx")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "gedcomx")]
     public partial class Gedcomx : Gx.Links.HypermediaEnabledData

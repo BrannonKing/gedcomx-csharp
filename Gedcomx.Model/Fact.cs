@@ -19,7 +19,6 @@ namespace Gx.Conclusion
     /// <summary>
     ///  A conclusion about a fact applicable to a person or relationship.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Fact")]
     [System.Xml.Serialization.XmlRootAttribute(Namespace = "http://gedcomx.org/v1/", ElementName = "fact")]
     public partial class Fact : Gx.Conclusion.Conclusion

@@ -14,7 +14,6 @@ namespace Gx.Agent
     /// <summary>
     ///  An address.
     /// </summary>
-    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace = "http://gedcomx.org/v1/", TypeName = "Address")]
     [Newtonsoft.Json.JsonObject("")]
     public partial class Address : Gx.Common.ExtensibleData
