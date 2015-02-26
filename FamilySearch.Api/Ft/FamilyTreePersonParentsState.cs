@@ -6,10 +6,12 @@ using System.Linq;
 using System.Text;
 using Gx.Rs.Api.Util;
 using System.Net;
+using System.Net.Http;
 using Gx.Fs;
 using Gx.Fs.Tree;
 using Gx.Conclusion;
 using Gx.Common;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api.Ft
 {
@@ -51,7 +53,7 @@ namespace FamilySearch.Api.Ft
         /// <remarks>The REST API response should have data if the invoking request was a GET and the response status is OK or GONE.</remarks>
         protected override Gx.Gedcomx LoadEntityConditionally(IRestResponse response)
         {
-            if (Request.Method == Method.GET && (Response.StatusCode == HttpStatusCode.OK
+            if (Request.Method == HttpMethod.Get && (Response.StatusCode == HttpStatusCode.OK
                   || response.StatusCode == HttpStatusCode.Gone))
             {
                 return LoadEntity(response);
@@ -69,7 +71,7 @@ namespace FamilySearch.Api.Ft
         /// <returns>The <see cref="Gx.Gedcomx"/> from the REST API response.</returns>
         protected override Gx.Gedcomx LoadEntity(IRestResponse response)
         {
-            return response.ToIRestResponse<FamilySearchPlatform>().Data;
+            return LoadEntity<FamilySearchPlatform>(response);
         }
 
         /// <summary>

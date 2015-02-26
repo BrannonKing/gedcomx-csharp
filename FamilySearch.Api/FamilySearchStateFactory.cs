@@ -3,11 +3,13 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Gx.Rs.Api.Util;
 using FamilySearch.Api.Util;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -113,7 +115,7 @@ namespace FamilySearch.Api
         /// </returns>
         public FamilySearchPlaces NewPlacesState(Uri discoveryUri, IFilterableRestClient client)
         {
-            return NewPlacesState(discoveryUri, client, Method.GET);
+            return NewPlacesState(discoveryUri, client, HttpMethod.Get);
         }
 
         /// <summary>
@@ -125,7 +127,7 @@ namespace FamilySearch.Api
         /// <returns>
         /// A <see cref="FamilySearchPlaces"/> instance containing the REST API response.
         /// </returns>
-        public FamilySearchPlaces NewPlacesState(Uri discoveryUri, IFilterableRestClient client, Method method)
+        public FamilySearchPlaces NewPlacesState(Uri discoveryUri, IFilterableRestClient client, HttpMethod method)
         {
             IRestRequest request = new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(discoveryUri, method);
             return NewPlacesState(request, client.Handle(request), client, null);
@@ -289,11 +291,6 @@ namespace FamilySearch.Api
         /// A <see cref="IFilterableRestClient" /> with the default configuration and filters.
         /// </returns>
         /// <remarks>
-        /// REST API request logging is disabled by default. To enable logging of REST API requests, set the environment variable
-        /// "enableLog4NetLogging" to "True" within the scope of the execution context (or a greater scope). The environment variable will
-        /// be evaluated only once and only during this method. After the client has been created using this method, the environment variable
-        /// will not enable or disable client request logging.
-        /// 
         /// This specific overload enables the "birth-date-not-considered-death-declaration" feature for every client created.
         /// </remarks>
         protected override IFilterableRestClient LoadDefaultClient(Uri uri)
@@ -314,11 +311,6 @@ namespace FamilySearch.Api
         /// A <see cref="IFilterableRestClient" /> with the default configuration and filters.
         /// </returns>
         /// <remarks>
-        /// REST API request logging is disabled by default. To enable logging of REST API requests, set the environment variable
-        /// "enableLog4NetLogging" to "True" within the scope of the execution context (or a greater scope). The environment variable will
-        /// be evaluated only once and only during this method. After the client has been created using this method, the environment variable
-        /// will not enable or disable client request logging.
-        /// 
         /// This specific overload enables the "birth-date-not-considered-death-declaration" feature for every client created.
         /// </remarks>
         internal virtual IFilterableRestClient LoadDefaultClientInt(Uri uri)

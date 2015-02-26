@@ -4,10 +4,12 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Links;
 using FamilySearch.Api.Util;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api.Ft
 {
@@ -73,7 +75,7 @@ namespace FamilySearch.Api.Ft
                 throw new GedcomxApplicationException("Unrestorable change: " + change.Id);
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Post);
             return ((FamilyTreeStateFactory)this.stateFactory).NewChangeHistoryState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

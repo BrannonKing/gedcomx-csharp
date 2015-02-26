@@ -41,8 +41,10 @@ namespace Tavis
         {
             var list = new List<Link>();
             var parser = new LinkHeaderParser(linkRegistry);
-            var linkHeaders = headers.GetValues("Link");
-            foreach (var linkHeader in linkHeaders)
+            IEnumerable<string> headerValues;
+            if (!headers.TryGetValues("Link", out headerValues))
+                return list;
+            foreach (var linkHeader in headerValues)
             {
                 list.AddRange(parser.Parse(baseUri, linkHeader));
             }

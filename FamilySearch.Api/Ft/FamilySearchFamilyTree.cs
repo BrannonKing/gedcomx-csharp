@@ -15,7 +15,9 @@ using Gx.Fs;
 using FamilySearch.Api.Util;
 using Tavis.UriTemplates;
 using System.Net;
+using System.Net.Http;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api.Ft
 {
@@ -76,7 +78,7 @@ namespace FamilySearch.Api.Ft
         /// <param name="client">The REST API client to use for API calls.</param>
         /// <param name="stateFactory">The state factory to use for state instantiation.</param>
         private FamilySearchFamilyTree(Uri uri, IFilterableRestClient client, FamilyTreeStateFactory stateFactory)
-            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, Method.GET), client, stateFactory)
+            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, HttpMethod.Get), client, stateFactory)
         {
         }
 
@@ -216,7 +218,7 @@ namespace FamilySearch.Api.Ft
 
             FamilySearchPlatform entity = new FamilySearchPlatform();
             entity.ChildAndParentsRelationships = new List<ChildAndParentsRelationship>() { chap };
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Post);
             request.SetEntity(entity);
             return ((FamilyTreeStateFactory)this.stateFactory).NewChildAndParentsRelationshipState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
@@ -240,7 +242,7 @@ namespace FamilySearch.Api.Ft
 
             FamilySearchPlatform entity = new FamilySearchPlatform();
             entity.ChildAndParentsRelationships = chaps;
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Post);
             request.SetEntity(entity);
             return ((FamilyTreeStateFactory)this.stateFactory).NewRelationshipsStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
@@ -264,7 +266,7 @@ namespace FamilySearch.Api.Ft
             String template = link.Template;
             String uri = new UriTemplate(template).AddParameter("pid", id).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, HttpMethod.Get);
             return (FamilyTreePersonState)((FamilyTreeStateFactory)this.stateFactory).NewPersonStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -287,7 +289,7 @@ namespace FamilySearch.Api.Ft
             String template = link.Template;
             String uri = new UriTemplate(template).AddParameter("person", id).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, HttpMethod.Get);
             return (FamilyTreePersonState)((FamilyTreeStateFactory)this.stateFactory).NewPersonStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -419,14 +421,14 @@ namespace FamilySearch.Api.Ft
             String template = link.Template;
             String uri = new UriTemplate(template).AddParameter("pid", personId).AddParameter("uid", treeUserId).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, Method.GET);
-            IRestResponse response = Invoke(request, options);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, HttpMethod.Get);
+            var response = Invoke<FamilySearchPlatform>(request, options);
             if (response.StatusCode == HttpStatusCode.NoContent)
             {
                 return null;
             }
 
-            FamilySearchPlatform fsp = response.ToIRestResponse<FamilySearchPlatform>().Data;
+            FamilySearchPlatform fsp = response.Data;
             if (fsp != null && fsp.ChildAndParentsRelationships != null && fsp.ChildAndParentsRelationships.Count > 0)
             {
                 return ((FamilyTreeStateFactory)this.stateFactory).NewChildAndParentsRelationshipState(request, response, this.Client, this.CurrentAccessToken);
@@ -584,7 +586,7 @@ namespace FamilySearch.Api.Ft
             String template = link.Template;
             String uri = new UriTemplate(template).AddParameter("pid", personId).AddParameter("uid", treeUserId).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).AddHeader("Location", relationshipState.GetSelfUri()).Build(uri, Method.PUT);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).AddHeader("Location", relationshipState.GetSelfUri()).Build(uri, HttpMethod.Put);
             return (FamilyTreePersonState)((FamilyTreeStateFactory)this.stateFactory).NewPersonStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -728,7 +730,7 @@ namespace FamilySearch.Api.Ft
             String template = link.Template;
             String uri = new UriTemplate(template).AddParameter("pid", personId).AddParameter("uid", treeUserId).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, Method.DELETE);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, HttpMethod.Delete);
             return (FamilyTreePersonState)((FamilyTreeStateFactory)this.stateFactory).NewPersonStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

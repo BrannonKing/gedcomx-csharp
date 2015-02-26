@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RestSharp.Portable;
 using Tavis.UriTemplates;
 
 namespace Gx.Rs.Api.Options
@@ -74,9 +75,9 @@ namespace Gx.Rs.Api.Options
         {
             var url = new Url(request.Resource);
             var query = url.QueryParams.ToList();
-
             if (this.replace)
             {
+                // shouldn't we use the url.Remove* stuff here instead?
                 query.RemoveAll(x => x.Key == this.name);
             }
 
@@ -85,7 +86,11 @@ namespace Gx.Rs.Api.Options
                 query.Add(new KeyValuePair<string, object>(this.name, value));
             }
 
-            request.Resource = url.Path + "?" + String.Join("&", query.Select(x => x.Key + "=" + x.Value));
+            var rr = request as RestRequest;
+            if (rr == null)
+                throw new ArgumentException("Expected RestRequest", "request");
+
+            rr.Resource = url.Path + "?" + String.Join("&", query.Select(x => x.Key + "=" + x.Value));
         }
 
         /// <summary>

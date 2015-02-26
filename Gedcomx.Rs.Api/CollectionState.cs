@@ -6,16 +6,16 @@ using Gx.Records;
 using Gx.Rs.Api.Util;
 using Gx.Source;
 using Gx.Types;
-using RestSharp;
-using RestSharp.Deserializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using Tavis.UriTemplates;
-using RestSharp.Extensions;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
@@ -51,7 +51,7 @@ namespace Gx.Rs.Api
         /// <param name="client">The REST API client to use for API calls.</param>
         /// <param name="stateFactory">The state factory to use for state instantiation.</param>
         private CollectionState(Uri uri, IFilterableRestClient client, StateFactory stateFactory)
-            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, Method.GET), client, stateFactory)
+            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, HttpMethod.Get), client, stateFactory)
         {
         }
 
@@ -147,7 +147,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewRecordsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -168,7 +168,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException(String.Format("Collection at {0} doesn't support adding records.", GetUri()));
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(record).Build(link.Href, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(record).Build(link.Href, HttpMethod.Post);
             return this.stateFactory.NewRecordState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -187,7 +187,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewPersonsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -223,7 +223,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException(String.Format("Collection at {0} doesn't support adding persons.", GetUri()));
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(link.Href, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(link.Href, HttpMethod.Post);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -242,7 +242,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -261,7 +261,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(personUri, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(personUri, HttpMethod.Get);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -297,7 +297,7 @@ namespace Gx.Rs.Api
             String template = link.Template;
 
             String uri = new UriTemplate(template).AddParameter("q", query).Resolve();
-            IRestRequest request = CreateAuthenticatedFeedRequest().Build(uri, Method.GET);
+            IRestRequest request = CreateAuthenticatedFeedRequest().Build(uri, HttpMethod.Get);
             return this.stateFactory.NewPersonSearchResultsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -333,7 +333,7 @@ namespace Gx.Rs.Api
             String template = link.Template;
 
             String uri = new UriTemplate(template).AddParameter("q", query).Resolve();
-            IRestRequest request = CreateAuthenticatedFeedRequest().Build(uri, Method.GET);
+            IRestRequest request = CreateAuthenticatedFeedRequest().Build(uri, HttpMethod.Get);
             return this.stateFactory.NewPlaceSearchResultsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -352,7 +352,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewRelationshipsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -443,7 +443,7 @@ namespace Gx.Rs.Api
 
             Gedcomx entity = new Gedcomx();
             entity.AddRelationship(relationship);
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(link.Href, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(link.Href, HttpMethod.Post);
             return this.stateFactory.NewRelationshipState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -466,7 +466,7 @@ namespace Gx.Rs.Api
 
             Gedcomx entity = new Gedcomx();
             entity.Relationships = relationships;
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(link.Href, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(link.Href, HttpMethod.Post);
             return this.stateFactory.NewRelationshipsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -519,7 +519,7 @@ namespace Gx.Rs.Api
             String mediaType = artifact.ContentType;
             IRestRequest request = state.CreateAuthenticatedGedcomxRequest()
                 .ContentType(MediaTypes.MULTIPART_FORM_DATA_TYPE)
-                .Build(link.Href, Method.POST);
+                .Build(link.Href, HttpMethod.Post);
 
             if (description != null)
             {
@@ -527,21 +527,21 @@ namespace Gx.Rs.Api
                 {
                     foreach (TextValue value in description.Titles)
                     {
-                        request.AddFile("title", Encoding.UTF8.GetBytes(value.Value), null, MediaTypes.TEXT_PLAIN_TYPE);
+                        request.AddFile("title", Encoding.UTF8.GetBytes(value.Value), null, new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
                     }
                 }
                 if (description.Descriptions != null)
                 {
                     foreach (TextValue value in description.Descriptions)
                     {
-                        request.AddFile("description", Encoding.UTF8.GetBytes(value.Value), null, MediaTypes.TEXT_PLAIN_TYPE);
+                        request.AddFile("description", Encoding.UTF8.GetBytes(value.Value), null, new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
                     }
                 }
                 if (description.Citations != null)
                 {
                     foreach (SourceCitation citation in description.Citations)
                     {
-                        request.AddFile("citation", Encoding.UTF8.GetBytes(citation.Value), null, MediaTypes.TEXT_PLAIN_TYPE);
+                        request.AddFile("citation", Encoding.UTF8.GetBytes(citation.Value), null, new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
                     }
                 }
                 if (description.MediaType != null)
@@ -558,20 +558,7 @@ namespace Gx.Rs.Api
             Byte[] inputBytes = GetBytes(artifact.InputStream);
             if (artifact.Name != null)
             {
-                request.Files.Add(new FileParameter()
-                {
-                    Name = "artifact",
-                    FileName = artifact.Name,
-                    ContentType = artifact.ContentType,
-                    Writer = new Action<Stream>(s =>
-                    {
-                        using (var ms = new MemoryStream(inputBytes))
-                        using (var reader = new StreamReader(ms))
-                        {
-                            reader.BaseStream.CopyTo(s);
-                        }
-                    })
-                });
+                request.AddFile("artifact", inputBytes, artifact.Name, new MediaTypeHeaderValue(artifact.ContentType));
             }
 
             return state.stateFactory.NewSourceDescriptionState(request, state.Invoke(request, options), state.Client, state.CurrentAccessToken);
@@ -592,7 +579,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewSourceDescriptionsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -615,7 +602,7 @@ namespace Gx.Rs.Api
 
             Gedcomx entity = new Gedcomx();
             entity.AddSourceDescription(source);
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(link.Href, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(link.Href, HttpMethod.Post);
             return this.stateFactory.NewSourceDescriptionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -634,7 +621,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -653,7 +640,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewCollectionsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -674,7 +661,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException(String.Format("Collection at {0} doesn't support adding subcollections.", GetUri()));
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(new Gedcomx().AddCollection(collection)).Build(link.Href, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(new Gedcomx().AddCollection(collection)).Build(link.Href, HttpMethod.Post);
             return this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -693,7 +680,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewSourceDescriptionsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -722,7 +709,11 @@ namespace Gx.Rs.Api
                     stream.Seek(0, SeekOrigin.Begin);
                 }
 
-                result = stream.ReadAsBytes();
+                using (var ms = new MemoryStream())
+                {
+                    stream.CopyTo(ms);
+                    result = ms.ToArray();
+                }
             }
 
             return result;

@@ -12,14 +12,16 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using RestSharp.Extensions;
 using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using Gx.Rs.Api;
 using FamilySearch.Api.Memories;
 using Gx.Conclusion;
 using Gx.Types;
 using FamilySearch.Api;
 using Gx.Fs.Discussions;
+using RestSharp.Portable;
 
 namespace Gedcomx.Rs.Api.Test
 {
@@ -67,7 +69,7 @@ namespace Gedcomx.Rs.Api.Test
                 .AddHeader("Authorization", "Bearer " + tree.CurrentAccessToken)
                 .Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE)
                 .ContentType(MediaTypes.MULTIPART_FORM_DATA_TYPE)
-                .Build("https://sandbox.familysearch.org/platform/memories/memories", Method.POST);
+                .Build("https://sandbox.familysearch.org/platform/memories/memories", HttpMethod.Post);
 
             foreach (var artifact in artifacts)
             {
@@ -75,31 +77,17 @@ namespace Gedcomx.Rs.Api.Test
 
                 foreach (TextValue value in description.Titles)
                 {
-                    request.AddFile("title", Encoding.UTF8.GetBytes(value.Value), null, MediaTypes.TEXT_PLAIN_TYPE);
+                    request.AddFile("title", Encoding.UTF8.GetBytes(value.Value), null, new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
                 }
 
                 foreach (SourceCitation citation in description.Citations)
                 {
-                    request.AddFile("citation", Encoding.UTF8.GetBytes(citation.Value), null, MediaTypes.TEXT_PLAIN_TYPE);
+                    request.AddFile("citation", Encoding.UTF8.GetBytes(citation.Value), null, new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
                 }
 
                 if (artifact.Name != null)
                 {
-                    request.Files.Add(new FileParameter()
-                    {
-                        Name = "artifact",
-                        FileName = artifact.Name,
-                        ContentType = artifact.ContentType,
-                        Writer = new Action<Stream>(s =>
-                        {
-                            artifact.InputStream.Seek(0, SeekOrigin.Begin);
-                            using (var ms = new MemoryStream(artifact.InputStream.ReadAsBytes()))
-                            using (var reader = new StreamReader(ms))
-                            {
-                                reader.BaseStream.CopyTo(s);
-                            }
-                        })
-                    });
+                    request.AddFile("artifact", artifact.InputStream, artifact.Name, new MediaTypeHeaderValue(artifact.ContentType));
                 }
             }
 

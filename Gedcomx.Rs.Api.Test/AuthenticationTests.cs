@@ -1,15 +1,17 @@
 ﻿using Gx.Rs.Api;
-using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Gx.Rs.Api.Util;
 using NUnit.Framework;
 using Gx.Links;
 using System.Net;
+using System.Net.Http;
 using CsQuery;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace Gedcomx.Rs.Api.Test
 {
@@ -27,7 +29,7 @@ namespace Gedcomx.Rs.Api.Test
             Link link = collection.GetLink(Rel.OAUTH2_TOKEN);
             IRestRequest request = new RestRequest()
                 .Accept(MediaTypes.APPLICATION_JSON_TYPE)
-                .Build(link.Href + "?access_token=" + collection.CurrentAccessToken, Method.DELETE);
+                .Build(link.Href + "?access_token=" + collection.CurrentAccessToken, HttpMethod.Delete);
             IRestResponse response = collection.Client.Handle(request);
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         }
@@ -45,7 +47,7 @@ namespace Gedcomx.Rs.Api.Test
                 .Accept(MediaTypes.APPLICATION_JSON_TYPE)
                 .ContentType(MediaTypes.APPLICATION_FORM_URLENCODED_TYPE)
                 .SetEntity(formData)
-                .Build(tokenLink.Href, Method.POST);
+                .Build(tokenLink.Href, HttpMethod.Post);
             IRestResponse response = collection.Client.Handle(request);
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
@@ -82,11 +84,11 @@ namespace Gedcomx.Rs.Api.Test
             formData.Add("redirect_uri", "https://familysearch.org/developers/sandbox-oauth2-redirect");
             IRestRequest request = new RestRequest()
                 .SetEntity(formData)
-                .Build(tokenLink.Href, Method.GET);
+                .Build(tokenLink.Href, HttpMethod.Get);
             IRestResponse response = collection.Client.Handle(request);
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var cq = new CQ(response.Content);
+            var cq = CQ.Create(new MemoryStream(response.RawBytes));
             Assert.AreEqual(1, cq.Select("input#userName").Length);
             Assert.AreEqual(1, cq.Select("input#password").Length);
         }
@@ -103,11 +105,11 @@ namespace Gedcomx.Rs.Api.Test
             IRestRequest request = new RestRequest()
                 .ContentType(MediaTypes.APPLICATION_FORM_URLENCODED_TYPE)
                 .SetEntity(formData)
-                .Build(tokenLink.Href, Method.POST);
+                .Build(tokenLink.Href, HttpMethod.Post);
             IRestResponse response = collection.Client.Handle(request);
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var cq = new CQ(response.Content);
+            var cq = CQ.Create(new MemoryStream(response.RawBytes));
             Assert.AreEqual(1, cq.Select("p#error").Length);
         }
 
@@ -122,11 +124,11 @@ namespace Gedcomx.Rs.Api.Test
             formData.Add("redirect_uri", "https://familysearch.org/developers/sandbox-oauth2-redirect");
             IRestRequest request = new RestRequest()
                 .SetEntity(formData)
-                .Build(tokenLink.Href, Method.POST);
+                .Build(tokenLink.Href, HttpMethod.Post);
             IRestResponse response = collection.Client.Handle(request);
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            var cq = new CQ(response.Content);
+            var cq = CQ.Create(new MemoryStream(response.RawBytes));
             Assert.AreEqual(1, cq.Select("input#userName").Length);
             Assert.AreEqual(1, cq.Select("input#password").Length);
         }

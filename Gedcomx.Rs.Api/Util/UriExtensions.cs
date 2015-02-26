@@ -22,7 +22,8 @@ namespace Gx.Rs.Api.Util
         /// </remarks>
         public static string GetBaseUrl(this Uri @this)
         {
-            return @this.GetLeftPart(UriPartial.Authority);
+            //return @this.GetLeftPart(UriPartial.Authority); // not supported in PCL
+            return @this.GetComponents(UriComponents.SchemeAndServer | UriComponents.UserInfo, UriFormat.Unescaped);
         }
     }
 }

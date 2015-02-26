@@ -1,5 +1,4 @@
-﻿using RestSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +7,7 @@ using Gx.Rs.Api.Util;
 using Gx.Rs.Api;
 using Gx.Fs;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api.Util
 {

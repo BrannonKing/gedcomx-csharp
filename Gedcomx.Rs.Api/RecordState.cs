@@ -4,9 +4,11 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
@@ -41,7 +43,7 @@ namespace Gx.Rs.Api
         /// <param name="client">The REST API client to use for API calls.</param>
         /// <param name="stateFactory">The state factory to use for state instantiation.</param>
         private RecordState(Uri uri, IFilterableRestClient client, StateFactory stateFactory)
-            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, Method.GET), client, stateFactory)
+            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, HttpMethod.Get), client, stateFactory)
         {
         }
 

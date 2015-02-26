@@ -1,7 +1,6 @@
 ﻿using FamilySearch.Api.Util;
 using Gx.Rs.Api;
 using NUnit.Framework;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,9 @@ using Newtonsoft.Json.Linq;
 using FamilySearch.Api.Ft;
 using Newtonsoft.Json;
 using System.Net;
+using System.Net.Http;
 using Gx.Fs;
+using RestSharp.Portable;
 
 namespace Gedcomx.Rs.Api.Test
 {
@@ -52,11 +53,11 @@ namespace Gedcomx.Rs.Api.Test
             // Get all the features that are pending
             IRestRequest request = new RestRequest()
                 .Accept(MediaTypes.APPLICATION_JSON_TYPE)
-                .Build("https://sandbox.familysearch.org/platform/pending-modifications", Method.GET);
-            IRestResponse response = tempTree.Client.Handle(request);
+                .Build("https://sandbox.familysearch.org/platform/pending-modifications", HttpMethod.Get);
+            var response = tempTree.Client.Handle<FamilySearchPlatform>(request);
 
             // Get each pending feature
-            features.AddRange(response.ToIRestResponse<FamilySearchPlatform>().Data.Features);
+            features.AddRange(response.Data.Features);
 
             // Add every pending feature to the tree's current client
             tempTree.Client.AddFilter(new ExperimentsFilter(features.Select(x => x.Name).ToArray()));
@@ -89,11 +90,11 @@ namespace Gedcomx.Rs.Api.Test
         {
             var person = tree.AddPerson(TestBacking.GetCreateMalePerson());
             cleanup.Add(person);
-            var id = person.Response.Headers.Get("X-ENTITY-ID").Single().Value.ToString();
+            var id = person.Response.Headers.GetValuesSafe("X-ENTITY-ID").Single();
             IRestRequest request = new RestRequest()
                 .Accept(MediaTypes.APPLICATION_JSON_TYPE)
-                .Build("https://sandbox.familysearch.org/platform/redirect?person=" + id, Method.GET);
-            var response = tree.Client.Execute(request);
+                .Build("https://sandbox.familysearch.org/platform/redirect?person=" + id, HttpMethod.Get);
+            var response = tree.Client.Execute(request).Result;
 
             Assert.IsNotNull(response);
             Assert.AreEqual(HttpStatusCode.TemporaryRedirect, response.StatusCode);
@@ -104,11 +105,11 @@ namespace Gedcomx.Rs.Api.Test
         {
             var person = tree.AddPerson(TestBacking.GetCreateMalePerson());
             cleanup.Add(person);
-            var id = person.Response.Headers.Get("X-ENTITY-ID").Single().Value.ToString();
+            var id = person.Response.Headers.GetValuesSafe("X-ENTITY-ID").Single();
             IRestRequest request = new RestRequest()
                 .Accept(MediaTypes.APPLICATION_JSON_TYPE)
-                .Build("https://sandbox.familysearch.org/platform/redirect?context=memories&person=" + id, Method.GET);
-            var response = tree.Client.Execute(request);
+                .Build("https://sandbox.familysearch.org/platform/redirect?context=memories&person=" + id, HttpMethod.Get);
+            var response = tree.Client.Execute(request).Result;
 
             Assert.IsNotNull(response);
             Assert.AreEqual(HttpStatusCode.TemporaryRedirect, response.StatusCode);
@@ -122,8 +123,8 @@ namespace Gedcomx.Rs.Api.Test
             var uri = String.Format("https://sandbox.familysearch.org/platform/redirect?context=sourcelinker&person={0}&hintId={1}", person.Person.Id, person.Person.Identifiers[0].Value);
             IRestRequest request = new RestRequest()
                 .Accept(MediaTypes.APPLICATION_JSON_TYPE)
-                .Build(uri, Method.GET);
-            var response = tree.Client.Execute(request);
+                .Build(uri, HttpMethod.Get);
+            var response = tree.Client.Execute(request).Result;
 
             Assert.IsNotNull(response);
             Assert.AreEqual(HttpStatusCode.TemporaryRedirect, response.StatusCode);
@@ -134,8 +135,8 @@ namespace Gedcomx.Rs.Api.Test
         {
             IRestRequest request = new RestRequest()
                 .Accept(MediaTypes.APPLICATION_JSON_TYPE)
-                .Build("https://sandbox.familysearch.org/platform/redirect?uri=https://familysearch.org/some/path?p1%3Dp1-value%26p2%3Dp2-value", Method.GET);
-            var response = tree.Client.Execute(request);
+                .Build("https://sandbox.familysearch.org/platform/redirect?uri=https://familysearch.org/some/path?p1%3Dp1-value%26p2%3Dp2-value", HttpMethod.Get);
+            var response = tree.Client.Execute(request).Result;
 
             Assert.IsNotNull(response);
             Assert.AreEqual(HttpStatusCode.TemporaryRedirect, response.StatusCode);

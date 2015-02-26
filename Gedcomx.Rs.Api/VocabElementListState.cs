@@ -6,8 +6,10 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
@@ -104,11 +106,14 @@ namespace Gx.Rs.Api
         /// <returns>The <see cref="RDFDataset"/> from the REST API response.</returns>
         protected override RDFDataset LoadEntity(IRestResponse response)
         {
-            var token = JSONUtils.FromString(response.Content);
-            model = (RDFDataset)JsonLdProcessor.ToRDF(token, options);
-            defaultQuads = model.GetQuads("@default");
+            using (var ms = new MemoryStream(response.RawBytes, false))
+            {
+                var token = JSONUtils.FromInputStream(ms);
+                model = (RDFDataset) JsonLdProcessor.ToRDF(token, options);
+                defaultQuads = model.GetQuads("@default");
 
-            return model;
+                return model;
+            }
         }
 
         /// <summary>

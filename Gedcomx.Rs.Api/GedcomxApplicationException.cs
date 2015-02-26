@@ -7,13 +7,13 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.RegularExpressions;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
     /// <summary>
     /// Represents an exception within the FamilySearch GEDCOM X application.
     /// </summary>
-    [Serializable]
     public class GedcomxApplicationException : Exception
     {
         /// <summary>
@@ -23,26 +23,6 @@ namespace Gx.Rs.Api
         /// The response associated with the exception if applicable.
         /// </value>
         public IRestResponse Response { get; private set; }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GedcomxApplicationException"/> class.
-        /// </summary>
-        /// <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo" /> that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext" /> that contains contextual information about the source or destination.</param>
-        protected GedcomxApplicationException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            if (info != null)
-            {
-                foreach (var member in info)
-                {
-                    if (member.Name == "Response")
-                    {
-                        Response = member.Value as IRestResponse;
-                    }
-                }
-            }
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GedcomxApplicationException"/> class.
@@ -128,7 +108,7 @@ namespace Gx.Rs.Api
                 {
                     try
                     {
-                        body = this.Response.ToIRestResponse<JObject>().Data.ToString();
+                        body = Encoding.UTF8.GetString(this.Response.RawBytes, 0, this.Response.RawBytes.Length);
                     }
                     catch (Exception)
                     {
@@ -159,13 +139,13 @@ namespace Gx.Rs.Api
 
                 if (this.Response != null)
                 {
-                    IEnumerable<Parameter> values = this.Response.Headers.Get("Warning");
+                    var values = this.Response.Headers.GetValuesSafe("Warning");
                     if (values != null && values.Any())
                     {
                         warnings = new List<HttpWarning>();
-                        foreach (Parameter value in values)
+                        foreach (var value in values)
                         {
-                            warnings.AddRange(HttpWarning.Parse(value));
+                            warnings.Add(HttpWarning.Parse(value));
                         }
                     }
                 }

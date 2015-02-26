@@ -2,10 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Source;
 using Gx.Links;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
@@ -65,7 +67,7 @@ namespace Gx.Rs.Api
         {
             Gedcomx entity = new Gedcomx();
             entity.AddSourceDescription(source);
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(GetSelfUri(), Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(entity).Build(GetSelfUri(), HttpMethod.Post);
             return this.stateFactory.NewSourceDescriptionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -84,7 +86,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

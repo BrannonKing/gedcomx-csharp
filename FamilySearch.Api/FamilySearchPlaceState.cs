@@ -7,6 +7,7 @@ using System.Text;
 using Gx.Rs.Api.Util;
 using Gedcomx.Model;
 using Gx.Conclusion;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {

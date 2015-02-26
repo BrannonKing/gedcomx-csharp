@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using Gx.Rs.Api.Util;
 using System.Net;
+using System.Net.Http;
 using Gx.Fs;
 using Gx.Conclusion;
 using Gx.Fs.Tree;
@@ -14,6 +15,7 @@ using Gx.Links;
 using Gx.Source;
 using Tavis.UriTemplates;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api.Ft
 {
@@ -48,7 +50,7 @@ namespace FamilySearch.Api.Ft
         /// <param name="client">The REST API client to use for API calls.</param>
         /// <param name="stateFactory">The state factory to use for state instantiation.</param>
         private FamilyTreePersonState(Uri uri, IFilterableRestClient client, FamilyTreeStateFactory stateFactory)
-            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, Method.GET), client, stateFactory)
+            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, HttpMethod.Get), client, stateFactory)
         {
         }
 
@@ -98,7 +100,7 @@ namespace FamilySearch.Api.Ft
         /// <remarks>The REST API response should have data if the invoking request was a GET and the response status is OK, GONE, or PRECONDITIONFAILED.</remarks>
         protected override Gx.Gedcomx LoadEntityConditionally(IRestResponse response)
         {
-            if ((Request.Method == Method.GET) && (response.StatusCode == HttpStatusCode.OK
+            if ((Request.Method == HttpMethod.Get) && (response.StatusCode == HttpStatusCode.OK
                   || response.StatusCode == HttpStatusCode.Gone)
                   || response.StatusCode == HttpStatusCode.PreconditionFailed)
             {
@@ -117,14 +119,7 @@ namespace FamilySearch.Api.Ft
         /// <returns>The <see cref="Gx.Gedcomx"/> from the REST API response.</returns>
         protected override Gx.Gedcomx LoadEntity(IRestResponse response)
         {
-            FamilySearchPlatform result = null;
-
-            if (response != null)
-            {
-                result = response.ToIRestResponse<FamilySearchPlatform>().Data;
-            }
-
-            return result;
+            return LoadEntity<FamilySearchPlatform>(response);
         }
 
         /// <summary>
@@ -253,7 +248,7 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return ((FamilyTreeStateFactory)this.stateFactory).NewSourceDescriptionsStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -270,7 +265,7 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return Invoke(request, options);
         }
 
@@ -370,7 +365,7 @@ namespace FamilySearch.Api.Ft
 
             Gx.Gedcomx gx = new Gx.Gedcomx();
             gx.Persons = new List<Person>() { person };
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedGedcomxRequest()).SetEntity(gx).Build(target, Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedGedcomxRequest()).SetEntity(gx).Build(target, HttpMethod.Post);
             return (FamilyTreePersonState)((FamilyTreeStateFactory)this.stateFactory).NewPersonStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -392,7 +387,7 @@ namespace FamilySearch.Api.Ft
                 throw new GedcomxApplicationException("Discussion reference cannot be deleted: missing link.");
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedGedcomxRequest()).Build(link.Href, Method.DELETE);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedGedcomxRequest()).Build(link.Href, HttpMethod.Delete);
             return (FamilyTreePersonState)((FamilyTreeStateFactory)this.stateFactory).NewPersonStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -413,7 +408,7 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Get);
             return ((FamilyTreeStateFactory)this.stateFactory).NewChildAndParentsRelationshipState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -432,7 +427,7 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedFeedRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedFeedRequest().Build(link.Href, HttpMethod.Get);
             return ((FamilyTreeStateFactory)this.stateFactory).NewChangeHistoryState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -451,7 +446,7 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedFeedRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedFeedRequest().Build(link.Href, HttpMethod.Get);
             return ((FamilyTreeStateFactory)this.stateFactory).NewPersonMatchResultsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -470,7 +465,7 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Post);
             return (FamilyTreePersonState)((FamilyTreeStateFactory)this.stateFactory).NewPersonStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -484,7 +479,7 @@ namespace FamilySearch.Api.Ft
         /// </returns>
         public PersonMergeState ReadMergeOptions(FamilyTreePersonState candidate, params IStateTransitionOption[] options)
         {
-            return TransitionToPersonMerge(Method.OPTIONS, candidate, options);
+            return TransitionToPersonMerge(HttpMethod.Options, candidate, options);
         }
 
         /// <summary>
@@ -497,7 +492,7 @@ namespace FamilySearch.Api.Ft
         /// </returns>
         public PersonMergeState ReadMergeAnalysis(FamilyTreePersonState candidate, params IStateTransitionOption[] options)
         {
-            return TransitionToPersonMerge(Method.GET, candidate, options);
+            return TransitionToPersonMerge(HttpMethod.Get, candidate, options);
         }
 
         /// <summary>
@@ -514,7 +509,7 @@ namespace FamilySearch.Api.Ft
         /// or
         /// The specified candidate.Person or candidate.Person.Id was null.
         /// </exception>
-        protected PersonMergeState TransitionToPersonMerge(Method method, FamilyTreePersonState candidate, params IStateTransitionOption[] options)
+        protected PersonMergeState TransitionToPersonMerge(HttpMethod method, FamilyTreePersonState candidate, params IStateTransitionOption[] options)
         {
             Link link = GetLink(Rel.MERGE);
             if (link == null || link.Template == null)
@@ -575,7 +570,7 @@ namespace FamilySearch.Api.Ft
 
             Gx.Gedcomx entity = new Gx.Gedcomx();
             entity.AddPerson(person);
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).SetEntity(entity).Build(link.Href, Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).SetEntity(entity).Build(link.Href, HttpMethod.Post);
             return ((FamilyTreeStateFactory)this.stateFactory).NewPersonNonMatchesState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -594,7 +589,7 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Get);
             return ((FamilyTreeStateFactory)this.stateFactory).NewPersonNonMatchesState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

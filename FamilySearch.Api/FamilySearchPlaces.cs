@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Rs.Api;
@@ -9,6 +10,7 @@ using Gx.Links;
 using Tavis.UriTemplates;
 using FamilySearch.Api.Util;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -69,7 +71,7 @@ namespace FamilySearch.Api
         /// <param name="client">The REST API client to use for API calls.</param>
         /// <param name="stateFactory">The state factory to use for state instantiation.</param>
         private FamilySearchPlaces(Uri uri, IFilterableRestClient client, FamilySearchStateFactory stateFactory)
-            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, Method.GET), client, stateFactory)
+            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, HttpMethod.Get), client, stateFactory)
         {
         }
 
@@ -169,7 +171,7 @@ namespace FamilySearch.Api
             String template = link.Template;
             String uri = new UriTemplate(template).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchJson(CreateAuthenticatedRequest()).Build(uri, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchJson(CreateAuthenticatedRequest()).Build(uri, HttpMethod.Get);
             return this.stateFactory.NewVocabElementListState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -192,7 +194,7 @@ namespace FamilySearch.Api
             String template = link.Template;
             String uri = new UriTemplate(template).AddParameter("ptgid", id).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchJson(CreateAuthenticatedRequest()).Build(uri, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchJson(CreateAuthenticatedRequest()).Build(uri, HttpMethod.Get);
             return this.stateFactory.NewVocabElementListState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -215,7 +217,7 @@ namespace FamilySearch.Api
             String template = link.Template;
             String uri = new UriTemplate(template).AddParameter("ptid", id).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchJson(CreateAuthenticatedRequest()).Build(uri, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchJson(CreateAuthenticatedRequest()).Build(uri, HttpMethod.Get);
             return this.stateFactory.NewVocabElementState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -237,7 +239,7 @@ namespace FamilySearch.Api
             String template = link.Template;
             String uri = new UriTemplate(template).AddParameter("pgid", id).Resolve();
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(uri, HttpMethod.Get);
             return this.stateFactory.NewPlaceGroupState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

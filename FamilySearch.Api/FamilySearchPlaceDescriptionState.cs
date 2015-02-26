@@ -3,9 +3,11 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Links;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -55,7 +57,7 @@ namespace FamilySearch.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return ((FamilySearchStateFactory)this.stateFactory).NewPlaceState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

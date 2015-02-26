@@ -4,10 +4,12 @@ using Gx.Links;
 using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api.Util
 {
@@ -99,7 +101,7 @@ namespace Gx.Rs.Api.Util
         {
             get
             {
-                return this.extensions.AsReadOnly();
+                return new ReadOnlyCollection<IWebResourceBuilderExtension>(extensions);
             }
         }
 
@@ -400,12 +402,12 @@ namespace Gx.Rs.Api.Util
             {
                 extension.Extend(request);
             }
-            IRestResponse clientResponse = Client.Handle(request);
+            var clientResponse = Client.Handle<Feed>(request);
             HttpStatusCode status = clientResponse.StatusCode;
             switch (status)
             {
                 case HttpStatusCode.OK:
-                    Feed feed = clientResponse.ToIRestResponse<Feed>().Data;
+                    var feed = clientResponse.Data;
                     LoadHRefsFromFeed(feed);
                     result = feed;
                     break;
@@ -450,7 +452,7 @@ namespace Gx.Rs.Api.Util
             /// </returns>
             public IRestRequest Provide(IFilterableRestClient client, String uri)
             {
-                client.BaseUrl = new Uri(uri).GetBaseUrl();
+                client.BaseUrl = new Uri(new Uri(uri).GetBaseUrl());
                 return new RestRequest(uri);
             }
         }

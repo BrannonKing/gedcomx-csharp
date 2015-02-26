@@ -4,11 +4,13 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Fs.Discussions;
 using Gx.Links;
 using FamilySearch.Api.Util;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -71,7 +73,7 @@ namespace FamilySearch.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return ((FamilySearchStateFactory)this.stateFactory).NewCollectionStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -87,7 +89,7 @@ namespace FamilySearch.Api
         {
             FamilySearchPlatform entity = new FamilySearchPlatform();
             entity.AddDiscussion(discussion);
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedGedcomxRequest()).SetEntity(entity).Build(GetSelfUri(), Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedGedcomxRequest()).SetEntity(entity).Build(GetSelfUri(), HttpMethod.Post);
             return ((FamilySearchStateFactory)this.stateFactory).NewDiscussionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

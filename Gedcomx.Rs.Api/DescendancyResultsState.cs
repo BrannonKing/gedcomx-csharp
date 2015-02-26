@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Gx.Rs.Api.Util;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {

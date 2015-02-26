@@ -6,12 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Conclusion;
 using Gx.Types;
 using Gx.Common;
 using FamilySearch.Api.Util;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api.Ft
 {
@@ -57,16 +59,6 @@ namespace FamilySearch.Api.Ft
             {
                 return Entity == null ? null : ((FamilySearchPlatform)Entity).ChildAndParentsRelationships;
             }
-        }
-
-        /// <summary>
-        /// Returns the <see cref="Gx.Gedcomx"/> from the REST API response.
-        /// </summary>
-        /// <param name="response">The REST API response.</param>
-        /// <returns>The <see cref="Gx.Gedcomx"/> from the REST API response.</returns>
-        protected override Gx.Gedcomx LoadEntity(IRestResponse response)
-        {
-            return Response.StatusCode == HttpStatusCode.OK ? Response.ToIRestResponse<Gx.Gedcomx>().Data : null;
         }
 
         /// <summary>
@@ -130,7 +122,7 @@ namespace FamilySearch.Api.Ft
         {
             FamilySearchPlatform entity = new FamilySearchPlatform();
             entity.ChildAndParentsRelationships = new List<ChildAndParentsRelationship>() { chap };
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(GetSelfUri(), Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(GetSelfUri(), HttpMethod.Post);
             return ((FamilyTreeStateFactory)this.stateFactory).NewChildAndParentsRelationshipState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

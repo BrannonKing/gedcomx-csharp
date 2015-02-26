@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Rs.Api;
 using Gx.Conclusion;
 using Gx.Links;
 using FamilySearch.Api.Util;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -70,7 +72,7 @@ namespace FamilySearch.Api
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.DELETE);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Delete);
             return ((FamilySearchStateFactory)this.stateFactory).NewPersonNonMatchesState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

@@ -3,9 +3,11 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
@@ -14,11 +16,6 @@ namespace Gx.Rs.Api
     /// </summary>
     public class StateFactory
     {
-        /// <summary>
-        /// This is the environment variable to use at runtime to determine if REST API request logging will occur.
-        /// </summary>
-        protected static readonly String ENABLE_LOG4NET_LOGGING_ENV_NAME = "enableLog4NetLogging";        // env variable/property to set
-
         /// <summary>
         /// Returns a new collection state by invoking the specified URI.
         /// </summary>
@@ -41,7 +38,7 @@ namespace Gx.Rs.Api
         /// </returns>
         public CollectionState NewCollectionState(Uri discoveryUri, IFilterableRestClient client)
         {
-            return NewCollectionState(discoveryUri, client, Method.GET);
+            return NewCollectionState(discoveryUri, client, HttpMethod.Get);
         }
 
         /// <summary>
@@ -53,7 +50,7 @@ namespace Gx.Rs.Api
         /// <returns>
         /// A <see cref="CollectionState"/> instance containing the REST API response.
         /// </returns>
-        public CollectionState NewCollectionState(Uri discoveryUri, IFilterableRestClient client, Method method)
+        public CollectionState NewCollectionState(Uri discoveryUri, IFilterableRestClient client, HttpMethod method)
         {
             IRestRequest request = new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(discoveryUri, method);
             return NewCollectionState(request, client.Handle(request), client, null);
@@ -81,7 +78,7 @@ namespace Gx.Rs.Api
         /// </returns>
         public PersonState NewPersonState(Uri discoveryUri, IFilterableRestClient client)
         {
-            return NewPersonState(discoveryUri, client, Method.GET);
+            return NewPersonState(discoveryUri, client, HttpMethod.Get);
         }
 
         /// <summary>
@@ -93,7 +90,7 @@ namespace Gx.Rs.Api
         /// <returns>
         /// A <see cref="PersonState"/> instance containing the REST API response.
         /// </returns>
-        public PersonState NewPersonState(Uri discoveryUri, IFilterableRestClient client, Method method)
+        public PersonState NewPersonState(Uri discoveryUri, IFilterableRestClient client, HttpMethod method)
         {
             IRestRequest request = new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(discoveryUri, method);
             return NewPersonState(request, client.Handle(request), client, null);
@@ -121,7 +118,7 @@ namespace Gx.Rs.Api
         /// </returns>
         public RecordState NewRecordState(Uri discoveryUri, IFilterableRestClient client)
         {
-            return NewRecordState(discoveryUri, client, Method.GET);
+            return NewRecordState(discoveryUri, client, HttpMethod.Get);
         }
 
         /// <summary>
@@ -133,7 +130,7 @@ namespace Gx.Rs.Api
         /// <returns>
         /// A <see cref="RecordState"/> instance containing the REST API response.
         /// </returns>
-        public RecordState NewRecordState(Uri discoveryUri, IFilterableRestClient client, Method method)
+        public RecordState NewRecordState(Uri discoveryUri, IFilterableRestClient client, HttpMethod method)
         {
             IRestRequest request = new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(discoveryUri, method);
             return NewRecordState(request, client.Handle(request), client, null);
@@ -145,32 +142,19 @@ namespace Gx.Rs.Api
         /// <param name="uri">The base URI for all future REST API requests to use with this client.</param>
         /// <returns>
         /// A <see cref="IFilterableRestClient"/> with the default configuration and filters.</returns>
-        /// <remarks>REST API request logging is disabled by default. To enable logging of REST API requests, set the environment variable
-        /// "enableLog4NetLogging" to "True" within the scope of the execution context (or a greater scope). The environment variable will
-        /// be evaluated only once and only during this method. After the client has been created using this method, the environment variable
-        /// will not enable or disable client request logging.
+        /// <remarks>
+        /// This method adds an EventSource named Request-EventLog. This can be used to create a log file.
         /// </remarks>
         protected internal virtual IFilterableRestClient LoadDefaultClient(Uri uri)
         {
             IFilterableRestClient client;
-            bool enableJerseyLogging;
 
             client = new FilterableRestClient(uri.GetBaseUrl())
             {
                 FollowRedirects = false,
             };
-
-            if (!bool.TryParse(Environment.GetEnvironmentVariable(ENABLE_LOG4NET_LOGGING_ENV_NAME), out enableJerseyLogging))
-            {
-                // Default if environment variable is not found
-                enableJerseyLogging = false;
-            }
-
-            if (enableJerseyLogging)
-            {
-                // handles null
-                client.AddFilter(new Log4NetLoggingFilter());
-            }
+  
+            client.AddFilter(new TracingFilter());
             return client;
         }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api.Options
 {
@@ -72,8 +73,12 @@ namespace Gx.Rs.Api.Options
         {
             if (this.replace)
             {
-                request.Parameters.RemoveAll(x => x.Type == ParameterType.HttpHeader);
-                request.Parameters.AddRange(value.Select(x => new Parameter() { Type = ParameterType.HttpHeader, Name = this.name, Value = x }));
+                for(int i = request.Parameters.Count - 1; i >= 0; i--)
+                    if (request.Parameters[i].Type == ParameterType.HttpHeader)
+                        request.Parameters.RemoveAt(i);
+
+                foreach (var toBeAdded in value.Select(x => new Parameter() { Type = ParameterType.HttpHeader, Name = this.name, Value = x }))
+                    request.Parameters.Add(toBeAdded);
             }
             else
             {

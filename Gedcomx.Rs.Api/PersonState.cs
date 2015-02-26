@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Conclusion;
@@ -10,8 +11,8 @@ using Gx.Source;
 using Gx.Links;
 using Gx.Records;
 using Gedcomx.Model;
-using RestSharp.Extensions;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
@@ -47,7 +48,7 @@ namespace Gx.Rs.Api
         /// <param name="client">The REST API client to use for API calls.</param>
         /// <param name="stateFactory">The state factory to use for state instantiation.</param>
         private PersonState(Uri uri, IFilterableRestClient client, StateFactory stateFactory)
-            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, Method.GET), client, stateFactory)
+            : this(new RestRequest(uri, HttpMethod.Get).Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE), client, stateFactory)
         {
         }
 
@@ -332,7 +333,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -351,7 +352,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewAncestryResultsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -370,7 +371,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewDescendancyResultsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -577,7 +578,7 @@ namespace Gx.Rs.Api
 
             Gedcomx gx = new Gedcomx();
             gx.Persons = new List<Person>() { person };
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(GetSelfUri(), Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(GetSelfUri(), HttpMethod.Post);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -756,7 +757,7 @@ namespace Gx.Rs.Api
                 target = new Uri(link.Href);
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, HttpMethod.Post);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -817,7 +818,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException("Conclusion cannot be deleted: missing link.");
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.DELETE);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Delete);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -926,7 +927,7 @@ namespace Gx.Rs.Api
 
             Gedcomx gx = new Gedcomx();
             gx.Persons = new List<Person>() { person };
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, HttpMethod.Post);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -948,7 +949,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException("Source reference cannot be deleted: missing link.");
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.DELETE);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Delete);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -967,7 +968,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewSourceDescriptionsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1088,7 +1089,7 @@ namespace Gx.Rs.Api
 
             Gedcomx gx = new Gedcomx();
             gx.Persons = new List<Person>() { person };
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, HttpMethod.Post);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1110,7 +1111,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException("Media reference cannot be deleted: missing link.");
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.DELETE);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Delete);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1204,7 +1205,7 @@ namespace Gx.Rs.Api
 
             Gedcomx gx = new Gedcomx();
             gx.Persons = new List<Person>() { person };
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, HttpMethod.Post);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1226,7 +1227,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException("Evidence reference cannot be deleted: missing link.");
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.DELETE);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Delete);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1339,7 +1340,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException("Note cannot be read: missing link.");
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1418,7 +1419,7 @@ namespace Gx.Rs.Api
 
             Gedcomx gx = new Gedcomx();
             gx.Persons = new List<Person>() { person };
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().SetEntity(gx).Build(target, HttpMethod.Post);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1440,7 +1441,7 @@ namespace Gx.Rs.Api
                 throw new GedcomxApplicationException("Note cannot be deleted: missing link.");
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.DELETE);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Delete);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1461,7 +1462,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewRelationshipState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1489,7 +1490,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(reference.Resource, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(reference.Resource, HttpMethod.Get);
             return this.stateFactory.NewPersonState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1551,7 +1552,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewPersonSpousesState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1633,7 +1634,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewPersonChildrenState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -1715,7 +1716,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewPersonParentsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 

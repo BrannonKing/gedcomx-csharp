@@ -9,6 +9,7 @@ using Gx.Rs.Api.Util;
 using System.Net;
 using Gedcomx.Model;
 using Gx.Fs.Users;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -40,16 +41,6 @@ namespace FamilySearch.Api
         protected override GedcomxApplicationState Clone(IRestRequest request, IRestResponse response, IFilterableRestClient client)
         {
             return new UserState(request, response, client, this.CurrentAccessToken, (FamilySearchStateFactory)this.stateFactory);
-        }
-
-        /// <summary>
-        /// Returns the <see cref="FamilySearchPlatform"/> from the REST API response.
-        /// </summary>
-        /// <param name="response">The REST API response.</param>
-        /// <returns>The <see cref="FamilySearchPlatform"/> from the REST API response.</returns>
-        protected override FamilySearchPlatform LoadEntity(IRestResponse response)
-        {
-            return response.StatusCode == HttpStatusCode.OK ? response.ToIRestResponse<FamilySearchPlatform>().Data : null;
         }
 
         /// <summary>

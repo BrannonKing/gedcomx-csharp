@@ -580,8 +580,8 @@ namespace Gedcomx.Rs.Api.Test
             var person2 = (FamilyTreePersonState)tree.AddPerson(TestBacking.GetCreateMalePerson());
             cleanup.Add(person2);
             Thread.Sleep(30);
-            person1 = tree.ReadPersonById(person1.Response.Headers.Get("X-ENTITY-ID").Single().Value.ToString());
-            person2 = tree.ReadPersonById(person2.Response.Headers.Get("X-ENTITY-ID").Single().Value.ToString());
+            person1 = tree.ReadPersonById(person1.Response.Headers.GetValuesSafe("X-ENTITY-ID").Single());
+            person2 = tree.ReadPersonById(person2.Response.Headers.GetValuesSafe("X-ENTITY-ID").Single());
             var state = person1.AddNonMatch(person2);
             Assert.DoesNotThrow(() => state.IfSuccessful());
             Assert.AreEqual(HttpStatusCode.NoContent, state.Response.StatusCode);
@@ -595,8 +595,8 @@ namespace Gedcomx.Rs.Api.Test
             var person2 = (FamilyTreePersonState)tree.AddPerson(TestBacking.GetCreateMalePerson());
             cleanup.Add(person2);
             Thread.Sleep(30);
-            person1 = tree.ReadPersonById(person1.Response.Headers.Get("X-ENTITY-ID").Single().Value.ToString());
-            person2 = tree.ReadPersonById(person2.Response.Headers.Get("X-ENTITY-ID").Single().Value.ToString());
+            person1 = tree.ReadPersonById(person1.Response.Headers.GetValuesSafe("X-ENTITY-ID").Single());
+            person2 = tree.ReadPersonById(person2.Response.Headers.GetValuesSafe("X-ENTITY-ID").Single());
             var state = (PersonNonMatchesState)person1.AddNonMatch(person2).Get();
             state = state.RemoveNonMatch(state.Persons[0]);
             Assert.DoesNotThrow(() => state.IfSuccessful());
@@ -628,9 +628,9 @@ namespace Gedcomx.Rs.Api.Test
             Assert.IsTrue(!response.HasClientError() && !response.HasServerError());
             // NOTE: The READ_PERSON_ID user does not have images, but a default is specified, thus the response should be 307.
             Assert.AreEqual(HttpStatusCode.TemporaryRedirect, response.StatusCode);
-            Assert.IsTrue(response.Headers.Get("Location").Any());
-            Assert.IsNotNull(response.Headers.Get("Location").Single().Value);
-            Assert.AreEqual(location, response.Headers.Get("Location").Single().Value.ToString());
+            Assert.IsTrue(response.Headers.GetValuesSafe("Location").Any());
+            Assert.IsNotNull(response.Headers.GetValuesSafe("Location").Single());
+            Assert.AreEqual(location, response.Headers.GetValuesSafe("Location").Single());
         }
 
         [Test]

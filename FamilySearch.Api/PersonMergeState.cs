@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Fs.Tree;
 using Gx.Links;
 using FamilySearch.Api.Util;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -44,16 +46,6 @@ namespace FamilySearch.Api
         }
 
         /// <summary>
-        /// Returns the <see cref="FamilySearchPlatform"/> from the REST API response.
-        /// </summary>
-        /// <param name="response">The REST API response.</param>
-        /// <returns>The <see cref="FamilySearchPlatform"/> from the REST API response.</returns>
-        protected override FamilySearchPlatform LoadEntity(IRestResponse response)
-        {
-            return response.StatusCode == HttpStatusCode.OK ? response.ToIRestResponse<FamilySearchPlatform>().Data : null;
-        }
-
-        /// <summary>
         /// Gets the analysis of the current person merge.
         /// </summary>
         /// <value>
@@ -77,7 +69,7 @@ namespace FamilySearch.Api
         {
             get
             {
-                return Entity != null || this.Response.Headers.Get("Allow").Where(x => x.Value != null && x.Value.ToString().ToUpper().Contains(Method.POST.ToString())).Any();
+                return Entity != null || this.Response.Headers.GetValuesSafe("Allow").Any(x => x.IndexOf(HttpMethod.Post.ToString(), StringComparison.OrdinalIgnoreCase) >= 0);
             }
         }
 
@@ -96,7 +88,7 @@ namespace FamilySearch.Api
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Get);
             return ((FamilySearchStateFactory)this.stateFactory).NewPersonMergeState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -115,7 +107,7 @@ namespace FamilySearch.Api
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Get);
             return ((FamilySearchStateFactory)this.stateFactory).NewPersonStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 

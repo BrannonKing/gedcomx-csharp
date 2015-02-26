@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PCLStorage;
 
 namespace Gx.Rs.Api.Util
 {
@@ -25,14 +26,11 @@ namespace Gx.Rs.Api.Util
         /// <param name="file">The file to be represented by this instance.</param>
         public FileDataSource(String file)
         {
-            using (var fs = new FileStream(file, FileMode.Open))
-            {
-                Byte[] bytes = new Byte[fs.Length];
-                fs.Read(bytes, 0, bytes.Length);
-                InputStream = new MemoryStream(bytes);
-            }
+            var mime = new MimeSharp.Mime();
+            ContentType = mime.Lookup(file);
 
-            InputStream.Seek(0, SeekOrigin.Begin);
+            var fileWrapper = FileSystem.Current.GetFileFromPathAsync(file).Result;
+            InputStream = fileWrapper.OpenAsync(FileAccess.Read).Result;
             Name = Path.GetFileName(file);
         }
 
@@ -49,11 +47,8 @@ namespace Gx.Rs.Api.Util
         }
 
         /// <summary>
-        /// Content-type is not yet supported for the file data source.
+        /// Content-type is the Apache standard for the given file extension.
         /// </summary>
-        /// <value>
-        /// Content-type is not yet supported for the file data source.
-        /// </value>
         public String ContentType
         {
             get;

@@ -1,9 +1,19 @@
 ﻿using RestSharp;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Gedcomx.File;
+using Gedcomx.Support;
+using Newtonsoft.Json.Serialization;
+using RestSharp.Portable;
+using RestSharp.Portable.Deserializers;
+using RestSharp.Portable.Encodings;
+using RestSharp.Portable.Serializers;
 
 namespace Gx.Rs.Api.Util
 {
@@ -33,7 +43,53 @@ namespace Gx.Rs.Api.Util
         public FilterableRestClient(string baseUrl)
             : base(baseUrl)
         {
-            filters = new List<IFilter>();
+            filters = new List<IFilter>{new ContentTypeRemover()};
+
+	        var xmlSerializer = new GedcomXmlDeserializer();
+	        var jsonSerializer = new GedcomJsonDeserializer();
+
+            AddHandler(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE, jsonSerializer);
+            AddHandler(MediaTypes.GEDCOMX_XML_MEDIA_TYPE, xmlSerializer);
+			AddHandler(MediaTypes.GEDCOMX_RECORDSET_JSON_MEDIA_TYPE, jsonSerializer);
+			AddHandler(MediaTypes.GEDCOMX_RECORDSET_XML_MEDIA_TYPE, xmlSerializer);
+			AddHandler(MediaTypes.APPLICATION_JSON_TYPE, jsonSerializer);
+			AddHandler(MediaTypes.APPLICATION_XML_TYPE, xmlSerializer);
+		}
+
+        private class ContentTypeRemover : IFilter
+        {
+            public void Handle(IRestClient client, IRestRequest request)
+            {
+                //if (request.Method == HttpMethod.Get)
+                {
+                    for (int i = request.Parameters.Count - 1; i >= 0; i--)
+                    {
+                        var p = request.Parameters[i];
+                        if (p.Name == "Content-Type" && p.Type == ParameterType.HttpHeader)
+                            request.Parameters.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        private class GedcomJsonDeserializer : IDeserializer
+        {
+            private readonly DefaultJsonSerialization _serializer = new DefaultJsonSerialization();
+            public T Deserialize<T>(IRestResponse response)
+            {
+                using (var ms = new MemoryStream(response.RawBytes, false))
+                    return _serializer.Deserialize<T>(ms);
+            }
+        }
+
+        private class GedcomXmlDeserializer : IDeserializer
+        {
+            private readonly DefaultXmlSerialization _serializer = new DefaultXmlSerialization();
+            public T Deserialize<T>(IRestResponse response)
+            {
+                using (var ms = new MemoryStream(response.RawBytes, false))
+                    return _serializer.Deserialize<T>(ms);
+            }
         }
 
         /// <summary>
@@ -59,10 +115,27 @@ namespace Gx.Rs.Api.Util
         {
             foreach (var filter in filters)
             {
-                filter.Handle((IRestClient)this, request);
+                filter.Handle(this, request);
             }
 
-            return this.Execute(request);
+            return this.Execute(request).Result; // should change this wrapper to async
         }
+
+        /// <summary>
+        /// Handles the specified request by applying all current filters.
+        /// </summary>
+        /// <param name="request">The REST API request that will be used to instantiate this state instance.</param>
+        /// <returns></returns>
+        public IRestResponse<T> Handle<T>(IRestRequest request)
+        {
+            foreach (var filter in filters)
+            {
+                filter.Handle(this, request);
+            }
+
+            return this.Execute<T>(request).Result; // should change this wrapper to async
+        }
+
+        public bool FollowRedirects { get; set; } // not sure what to do here
     }
 }

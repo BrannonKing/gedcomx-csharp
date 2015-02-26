@@ -6,8 +6,10 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using Gx.Rs.Api.Util;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
@@ -85,7 +87,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -105,7 +107,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Post);
             return this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -119,7 +121,7 @@ namespace Gx.Rs.Api
         /// </returns>
         public CollectionState ReadCollection(SourceDescription sourceDescription, params IStateTransitionOption[] options)
         {
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(sourceDescription.About, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(sourceDescription.About, HttpMethod.Get);
             return this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -138,7 +140,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(link.Href, HttpMethod.Get);
             return this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -156,7 +158,7 @@ namespace Gx.Rs.Api
             String href = link == null ? null : link.Href == null ? null : link.Href;
             href = href == null ? GetUri() : href;
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(href, Method.POST);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(href, HttpMethod.Post);
             return (CollectionState)this.stateFactory.NewCollectionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken).IfSuccessful();
         }
     }

@@ -7,8 +7,10 @@ using System.Text;
 using Gx.Rs.Api.Util;
 using Gx.Fs;
 using System.Net;
+using System.Net.Http;
 using FamilySearch.Api.Util;
 using Gx.Links;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api.Ft
 {
@@ -50,7 +52,7 @@ namespace FamilySearch.Api.Ft
         /// <remarks>The REST API response should have data if the invoking request was a GET and the response status is OK, GONE, or PRECONDITIONFAILED.</remarks>
         protected override Gx.Gedcomx LoadEntityConditionally(IRestResponse response)
         {
-            if (Request.Method == Method.GET && (response.StatusCode == HttpStatusCode.OK
+            if (Request.Method == HttpMethod.Get && (response.StatusCode == HttpStatusCode.OK
                   || response.StatusCode == HttpStatusCode.Gone)
                     || response.StatusCode == HttpStatusCode.PreconditionFailed)
             {
@@ -69,7 +71,7 @@ namespace FamilySearch.Api.Ft
         /// <returns>The <see cref="Gx.Gedcomx"/> from the REST API response.</returns>
         protected override Gx.Gedcomx LoadEntity(IRestResponse response)
         {
-            return response.ToIRestResponse<FamilySearchPlatform>().Data;
+            return LoadEntity<FamilySearchPlatform>(response);
         }
 
         /// <summary>
@@ -118,7 +120,7 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedFeedRequest().Build(link.Href, Method.GET);
+            IRestRequest request = CreateAuthenticatedFeedRequest().Build(link.Href, HttpMethod.Get);
             return ((FamilyTreeStateFactory)this.stateFactory).NewChangeHistoryState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -137,8 +139,8 @@ namespace FamilySearch.Api.Ft
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.POST);
-            return (FamilyTreeRelationshipState)((FamilyTreeStateFactory)this.stateFactory).NewRelationshipStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Post);
+            return (FamilyTreeRelationshipState)((FamilyTreeStateFactory) this.stateFactory).NewRelationshipStateInt(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }        
     }
 }

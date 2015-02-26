@@ -3,6 +3,7 @@ using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Gx.Rs.Api.Util;
@@ -14,6 +15,7 @@ using FamilySearch.Api.Util;
 using Gx.Fs.Discussions;
 using Gx.Fs;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -48,7 +50,7 @@ namespace FamilySearch.Api
         /// <param name="client">The REST API client to use for API calls.</param>
         /// <param name="stateFactory">The state factory to use for state instantiation.</param>
         private FamilySearchCollectionState(Uri uri, IFilterableRestClient client, FamilySearchStateFactory stateFactory)
-            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, Method.GET), client, stateFactory)
+            : this(new RestRequest().Accept(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE).Build(uri, HttpMethod.Get), client, stateFactory)
         {
         }
 
@@ -104,14 +106,14 @@ namespace FamilySearch.Api
             String template = normalizedDateLink.Template;
             String uri = new UriTemplate(template).AddParameter("date", date).Resolve();
 
-            IRestRequest request = CreateRequest().Accept(MediaTypes.TEXT_PLAIN).Build(uri, Method.GET);
-            IRestResponse response = Invoke(request, options);
+            IRestRequest request = CreateRequest().Accept(MediaTypes.TEXT_PLAIN).Build(uri, HttpMethod.Get);
+            var response = Invoke<string>(request, options);
             DateInfo dateValue = new DateInfo();
             dateValue.Original = date;
-            dateValue.AddNormalizedExtension(new TextValue(response.ToIRestResponse<String>().Data));
+            dateValue.AddNormalizedExtension(new TextValue(response.Data));
             if (response.Headers != null)
             {
-                dateValue.Formal = response.Headers.Where(x => x.Name == "Location").Select(x => x.Value as string).FirstOrDefault();
+                dateValue.Formal = response.Headers.GetValuesSafe("Location").FirstOrDefault();
             }
             return dateValue;
         }
@@ -131,7 +133,7 @@ namespace FamilySearch.Api
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Get);
             return ((FamilySearchStateFactory)this.stateFactory).NewUserState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -179,7 +181,7 @@ namespace FamilySearch.Api
 
             String uri = new UriTemplate(template).AddParameter("q", query).Resolve();
 
-            IRestRequest request = CreateAuthenticatedFeedRequest().Build(uri, Method.GET);
+            IRestRequest request = CreateAuthenticatedFeedRequest().Build(uri, HttpMethod.Get);
             return ((FamilySearchStateFactory)this.stateFactory).NewPersonMatchResultsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -198,7 +200,7 @@ namespace FamilySearch.Api
                 return null;
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.GET);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Get);
             return ((FamilySearchStateFactory)this.stateFactory).NewDiscussionsState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -221,7 +223,7 @@ namespace FamilySearch.Api
 
             FamilySearchPlatform entity = new FamilySearchPlatform();
             entity.AddDiscussion(discussion);
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).SetEntity(entity).Build(link.Href, Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).SetEntity(entity).Build(link.Href, HttpMethod.Post);
             return ((FamilySearchStateFactory)this.stateFactory).NewDiscussionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

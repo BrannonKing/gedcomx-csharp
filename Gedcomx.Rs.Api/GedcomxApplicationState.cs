@@ -1,5 +1,4 @@
 using System;
-using RestSharp;
 using System.Text;
 using System.Collections.Generic;
 using Gx.Conclusion;
@@ -7,11 +6,13 @@ using Gx.Rs.Api.Util;
 using Gx.Links;
 using System.Net;
 using System.Linq;
+using System.Net.Http;
 using Newtonsoft.Json;
 using Gx.Records;
 using Gx.Common;
 using Gedcomx.Model;
 using Gedcomx.Support;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api
 {
@@ -97,7 +98,7 @@ namespace Gx.Rs.Api
         {
             get
             {
-                var result = this.Response != null ? this.Response.Headers.Get("ETag").Select(x => x.Value.ToString()).FirstOrDefault() : null;
+                var result = this.Response != null ? this.Response.Headers.GetValuesSafe("ETag").FirstOrDefault() : null;
                 if (result != null && result.IndexOf(gzipSuffix) != -1)
                 {
                     result = result.Replace(gzipSuffix, String.Empty);
@@ -116,7 +117,7 @@ namespace Gx.Rs.Api
         {
             get
             {
-                return this.Response != null ? this.Response.Headers.Get("Last-Modified").Select(x => (DateTime?)DateTime.Parse(x.Value.ToString())).FirstOrDefault() : null;
+                return this.Response != null ? this.Response.Headers.GetValuesSafe("Last-Modified").Select(x => (DateTime?)DateTime.Parse(x.ToString())).FirstOrDefault() : null;
             }
         }
 
@@ -171,11 +172,11 @@ namespace Gx.Rs.Api
         {
             if (link.Href != null)
             {
-                LastEmbeddedRequest = CreateRequestForEmbeddedResource(link.Rel).Build(link.Href, Method.GET);
-                LastEmbeddedResponse = Invoke(LastEmbeddedRequest, options);
+                LastEmbeddedRequest = CreateRequestForEmbeddedResource(link.Rel).Build(link.Href, HttpMethod.Get);
+                LastEmbeddedResponse = Invoke<T>(LastEmbeddedRequest, options);
                 if (LastEmbeddedResponse.StatusCode == HttpStatusCode.OK)
                 {
-                    entity.Embed(LastEmbeddedResponse.ToIRestResponse<T>().Data);
+                    entity.Embed(((IRestResponse<T>)LastEmbeddedResponse).Data);
                 }
                 else if (LastEmbeddedResponse.HasServerError())
                 {
@@ -216,6 +217,22 @@ namespace Gx.Rs.Api
             result = this.Client.Handle(request);
 
             return result;
+        }
+
+        /// <summary>
+        /// Applies the specified options before calling IFilterableRestClient.Handle() which applies any filters before executing the request.
+        /// </summary>
+        /// <param name="request">The REST API request.</param>
+        /// <param name="options">The options to applying before the request is handled.</param>
+        /// <returns>The REST API response after being handled.</returns>
+        protected internal IRestResponse<T> Invoke<T>(IRestRequest request, params IStateTransitionOption[] options)
+        {
+            foreach (IStateTransitionOption option in options)
+            {
+                option.Apply(request);
+            }
+
+            return this.Client.Handle<T>(request);
         }
 
         /// <summary>
@@ -344,7 +361,7 @@ namespace Gx.Rs.Api
                 request.Accept(accept.Value as string);
             }
 
-            request.Build(GetSelfUri(), Method.HEAD);
+            request.Build(GetSelfUri(), HttpMethod.Head);
             return Clone(request, Invoke(request, options), this.Client);
         }
 
@@ -361,7 +378,7 @@ namespace Gx.Rs.Api
             {
                 request.Accept(accept.Value as string);
             }
-            request.Build(GetSelfUri(), Method.OPTIONS);
+            request.Build(GetSelfUri(), HttpMethod.Options);
             return Clone(request, Invoke(request, options), this.Client);
         }
 
@@ -379,7 +396,7 @@ namespace Gx.Rs.Api
                 request.Accept(accept.Value as string);
             }
 
-            request.Build(GetSelfUri(), Method.GET);
+            request.Build(GetSelfUri(), HttpMethod.Get);
             IRestResponse response = Invoke(request, options);
             return Clone(request, response, this.Client);
         }
@@ -397,7 +414,7 @@ namespace Gx.Rs.Api
             {
                 request.Accept(accept.Value as string);
             }
-            request.Build(GetSelfUri(), Method.DELETE);
+            request.Build(GetSelfUri(), HttpMethod.Delete);
             return Clone(request, Invoke(request, options), this.Client);
         }
 
@@ -420,7 +437,7 @@ namespace Gx.Rs.Api
             {
                 request.ContentType(contentType.Value as string);
             }
-            request.SetEntity(entity).Build(GetSelfUri(), Method.PUT);
+            request.SetEntity(entity).Build(GetSelfUri(), HttpMethod.Put);
             return Clone(request, Invoke(request, options), this.Client);
         }
 
@@ -443,7 +460,7 @@ namespace Gx.Rs.Api
             {
                 request.ContentType(contentType.Value as string);
             }
-            request.SetEntity(entity).Build(GetSelfUri(), Method.POST);
+            request.SetEntity(entity).Build(GetSelfUri(), HttpMethod.Post);
             return Clone(request, Invoke(request, options), this.Client);
         }
 
@@ -457,13 +474,13 @@ namespace Gx.Rs.Api
         {
             get
             {
-                List<HttpWarning> warnings = new List<HttpWarning>();
-                IEnumerable<Parameter> warningValues = this.Response.Headers.Get("Warning");
+                var warnings = new List<HttpWarning>();
+                var warningValues = this.Response.Headers.GetValuesSafe("Warning");
                 if (warningValues != null)
                 {
-                    foreach (Parameter warningValue in warningValues)
+                    foreach (var warningValue in warningValues)
                     {
-                        warnings.AddRange(HttpWarning.Parse(warningValue));
+                        warnings.Add(HttpWarning.Parse(warningValue));
                     }
                 }
                 return warnings;
@@ -616,12 +633,12 @@ namespace Gx.Rs.Api
                 .Accept(MediaTypes.APPLICATION_JSON_TYPE)
                 .ContentType(MediaTypes.APPLICATION_FORM_URLENCODED_TYPE)
                 .SetEntity(formData)
-                .Build(tokenLink.Href, Method.POST);
-            IRestResponse response = Invoke(request, options);
+                .Build(tokenLink.Href, HttpMethod.Post);
+            var response = Invoke<IDictionary<string, object>>(request, options);
 
             if ((int)response.StatusCode >= 200 && (int)response.StatusCode < 300)
             {
-                var accessToken = JsonConvert.DeserializeObject<IDictionary<string, object>>(response.Content);
+                var accessToken = response.Data;
                 String access_token = null;
 
                 if (accessToken.ContainsKey("access_token"))
@@ -672,7 +689,7 @@ namespace Gx.Rs.Api
             {
                 request.ContentType(contentType.Value as string);
             }
-            request.Build(link.Href, Method.GET);
+            request.Build(link.Href, HttpMethod.Get);
             return Clone(request, Invoke(request, options), this.Client);
         }
 
@@ -777,7 +794,7 @@ namespace Gx.Rs.Api
                 return null;
             }
 
-            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(contributor.Resource, Method.GET);
+            IRestRequest request = CreateAuthenticatedGedcomxRequest().Build(contributor.Resource, HttpMethod.Get);
             return this.stateFactory.NewAgentState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -791,7 +808,7 @@ namespace Gx.Rs.Api
         {
             get
             {
-                return Response.Headers;
+                return Response.Headers.SelectMany(h => h.Value.Select(v => new Parameter{Name = h.Key, Value = v})).ToList();
             }
         }
 
@@ -840,6 +857,7 @@ namespace Gx.Rs.Api
         /// The entity represented by this state.
         /// </value>
         public T Entity { get; private set; }
+
         /// <summary>
         /// Returns the entity from the REST API response.
         /// </summary>
@@ -847,11 +865,20 @@ namespace Gx.Rs.Api
         /// <returns>The entity from the REST API response.</returns>
         protected virtual T LoadEntity(IRestResponse response)
         {
-            T result = null;
+            return LoadEntity<T>(response);
+        }
 
-            if (response != null)
+        /// <summary>
+        /// Returns the entity from the REST API response according to the type passed to the method generic.
+        /// </summary>
+        protected TRes LoadEntity<TRes>(IRestResponse response)
+        {
+            TRes result = default(TRes);
+
+            if (response != null && response.StatusCode == HttpStatusCode.OK)
             {
-                result = response.ToIRestResponse<T>().Data;
+                var handler = this.Client.GetHandler(response.ContentType);
+                result = handler != null ? handler.Deserialize<TRes>(response) : default(TRes);
             }
 
             return result;
@@ -883,7 +910,7 @@ namespace Gx.Rs.Api
             : base(request, response, client, accessToken, stateFactory)
         {
             this.Entity = LoadEntityConditionally(this.Response);
-            List<Link> links = LoadLinks(this.Response, this.Entity, this.Request.RequestFormat);
+            List<Link> links = LoadLinks(this.Response, this.Entity);
             this.Links = new List<Link>();
             this.Links.AddRange(links);
         }
@@ -896,7 +923,7 @@ namespace Gx.Rs.Api
         /// <remarks>The REST API response should have data if the invoking request was not a HEAD or OPTIONS request and the response status is OK.</remarks>
         protected virtual T LoadEntityConditionally(IRestResponse response)
         {
-            if (Request.Method != Method.HEAD && Request.Method != Method.OPTIONS && response.StatusCode == HttpStatusCode.OK)
+            if (Request.Method != HttpMethod.Head && Request.Method != HttpMethod.Options && response.StatusCode == HttpStatusCode.OK)
             {
                 return LoadEntity(response);
             }
@@ -921,21 +948,20 @@ namespace Gx.Rs.Api
         /// </summary>
         /// <param name="response">The REST API response.</param>
         /// <param name="entity">The entity to also consider for finding links.</param>
-        /// <param name="contentFormat">The content format (JSON or XML) of the REST API response data.</param>
         /// <returns>A list of all links discovered from the REST API response and entity object.</returns>
-        protected List<Link> LoadLinks(IRestResponse response, T entity, DataFormat contentFormat)
+        protected List<Link> LoadLinks(IRestResponse response, T entity)
         {
             List<Link> links = new List<Link>();
-            var location = response.Headers.FirstOrDefault(x => x.Name == "Location");
+            var location = response.Headers.GetValuesSafe("Location").FirstOrDefault();
 
             //if there's a location, we'll consider it a "self" link.
-            if (location != null && location.Value != null)
+            if (location != null)
             {
-                links.Add(new Link() { Rel = Rel.SELF, Href = location.Value.ToString() });
+                links.Add(new Link() { Rel = Rel.SELF, Href = location });
             }
 
             //initialize links with link headers
-            foreach (var header in response.Headers.Where(x => x.Name == "Link" && x.Value != null).SelectMany(x => linkHeaderParser.Parse(response.ResponseUri, x.Value.ToString())))
+            foreach (var header in response.Headers.GetValuesSafe("Link").SelectMany(x => linkHeaderParser.Parse(response.ResponseUri, x)))
             {
                 Link link = new Link() { Rel = header.Relation, Href = header.Target.ToString() };
                 link.Template = header.GetLinkExtensionSafe("template");

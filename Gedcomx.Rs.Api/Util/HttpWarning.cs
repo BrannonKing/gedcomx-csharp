@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api.Util
 {
@@ -13,7 +14,7 @@ namespace Gx.Rs.Api.Util
     /// </summary>
     public class HttpWarning
     {
-        private static Regex regex = new Regex("\\w+[\\s]+\\w+[\\s]+\\\"[^\"]+\\\"", RegexOptions.Compiled);
+        private static Regex regex = new Regex("\\w+[\\s]+\\w+[\\s]+\\\"[^\"]+\\\"");
         private readonly int? code;
         private readonly String application;
         private readonly String message;

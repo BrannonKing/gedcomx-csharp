@@ -7,10 +7,12 @@ using Gx.Rs.Api.Util;
 using Gx.Rs.Api;
 using Gx.Fs;
 using System.Net;
+using System.Net.Http;
 using Gx.Fs.Discussions;
 using Gx.Links;
 using FamilySearch.Api.Util;
 using Gedcomx.Model;
+using RestSharp.Portable;
 
 namespace FamilySearch.Api
 {
@@ -42,16 +44,6 @@ namespace FamilySearch.Api
         protected override GedcomxApplicationState Clone(IRestRequest request, IRestResponse response, IFilterableRestClient client)
         {
             return new DiscussionState(request, response, client, this.CurrentAccessToken, (FamilySearchStateFactory)this.stateFactory);
-        }
-
-        /// <summary>
-        /// Returns the <see cref="FamilySearchPlatform"/> from the REST API response.
-        /// </summary>
-        /// <param name="response">The REST API response.</param>
-        /// <returns>The <see cref="FamilySearchPlatform"/> from the REST API response.</returns>
-        protected override FamilySearchPlatform LoadEntity(IRestResponse response)
-        {
-            return response.StatusCode == HttpStatusCode.OK ? response.ToIRestResponse<FamilySearchPlatform>().Data : null;
         }
 
         /// <summary>
@@ -150,7 +142,7 @@ namespace FamilySearch.Api
         {
             FamilySearchPlatform fsp = new FamilySearchPlatform();
             fsp.AddDiscussion(discussion);
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).SetEntity(fsp).Build(GetSelfUri(), Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).SetEntity(fsp).Build(GetSelfUri(), HttpMethod.Post);
             return ((FamilySearchStateFactory)this.stateFactory).NewDiscussionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -242,7 +234,7 @@ namespace FamilySearch.Api
 
             FamilySearchPlatform gx = new FamilySearchPlatform();
             gx.Discussions = new List<Discussion>() { discussion };
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).SetEntity(gx).Build(target, Method.POST);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).SetEntity(gx).Build(target, HttpMethod.Post);
             return ((FamilySearchStateFactory)this.stateFactory).NewDiscussionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
 
@@ -264,7 +256,7 @@ namespace FamilySearch.Api
                 throw new GedcomxApplicationException("Comment cannot be deleted: missing link.");
             }
 
-            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, Method.DELETE);
+            IRestRequest request = RequestUtil.ApplyFamilySearchConneg(CreateAuthenticatedRequest()).Build(link.Href, HttpMethod.Delete);
             return ((FamilySearchStateFactory)this.stateFactory).NewDiscussionState(request, Invoke(request, options), this.Client, this.CurrentAccessToken);
         }
     }

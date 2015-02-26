@@ -1,16 +1,18 @@
-﻿using RestSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-using RestSharp.Extensions;
 using Newtonsoft.Json;
-using Gedcomx.Model.Util;
-using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using Gedcomx.File;
+using RestSharp.Portable;
 
 namespace Gx.Rs.Api.Util
 {
+    public enum DataFormat { Json, Xml }
+
     /// <summary>
     /// An extension helper class for RestSharp classes, primarily <see cref="IRestClient"/>, <see cref="IRestRequest"/>, and <see cref="IRestResponse"/>.
     /// </summary>
@@ -69,7 +71,7 @@ namespace Gx.Rs.Api.Util
         /// A REST API request with the request format, method, and resource initialized. After this method has been called, the returned result is
         /// now ready to be executed by <see cref="O:IRestClient.Execute"/>.
         /// </returns>
-        public static IRestRequest Build(this IRestRequest @this, string href, Method method)
+        public static IRestRequest Build(this IRestRequest @this, string href, HttpMethod method)
         {
             return @this.Build(new Uri(href), method);
         }
@@ -84,13 +86,16 @@ namespace Gx.Rs.Api.Util
         /// A REST API request with the request format, method, and resource initialized. After this method has been called, the returned result is
         /// now ready to be executed by <see cref="O:IRestClient.Execute" />.
         /// </returns>
-        public static IRestRequest Build(this IRestRequest @this, Uri uri, Method method)
+        public static IRestRequest Build(this IRestRequest @this, Uri uri, HttpMethod method)
         {
-            @this.RequestFormat = @this.GetDataFormat();
-            @this.Resource = uri.PathAndQuery;
-            @this.Method = method;
+            var rr = @this as RestRequest;
+            if (rr == null)
+                throw new ArgumentException("Expected RestRequest", "this");
+            
+            rr.Resource = uri.PathAndQuery;
+            rr.Method = method;
 
-            return @this;
+            return rr;
         }
 
         /// <summary>
@@ -124,29 +129,33 @@ namespace Gx.Rs.Api.Util
             }
             else
             {
-                var formatHeader = @this.GetHeaders().Get("Content-Type").FirstOrDefault() ?? @this.GetHeaders().Get("Accept").FirstOrDefault();
+                var ct = @this.GetHeaders().Get("Content-Type").FirstOrDefault();
+                var formatHeader = ct ?? @this.GetHeaders().Get("Accept").FirstOrDefault();
 
-                if (formatHeader != null && formatHeader.Value != null)
-                {
-                    DataFormat format = @this.GetDataFormat();
-                    String value = null;
+	            if (formatHeader != null && formatHeader.Value != null)
+	            {
+		            DataFormat format = @this.GetDataFormat();
 
-                    if (format == DataFormat.Json)
-                    {
-                        value = JsonSerializer.Serialize(entity);
-                    }
-                    else if (format == DataFormat.Xml)
-                    {
-                        value = XmlSerializer.Serialize(entity);
-                    }
+		            using (var ms = new MemoryStream())
+		            {
+			            if (format == DataFormat.Json)
+			            {
+				            JsonSerializer.Serialize(entity, ms);
+			            }
+			            else if (format == DataFormat.Xml)
+			            {
+				            XmlSerializer.Serialize(entity, ms);
+			            }
 
-                    @this.AddParameter(new Parameter() { Name = formatHeader.Value.ToString(), Type = ParameterType.RequestBody, Value = value });
-                }
-                else
-                {
-                    // This is a backup option, but is probably a bad idea. Throw exception?
-                    @this.AddBody(entity);
-                }
+			            @this.AddParameter(new Parameter {Name = formatHeader.Value.ToString(), ContentType = new MediaTypeHeaderValue(formatHeader.Value.ToString()),
+							Type = ParameterType.RequestBody, Value = ms.ToArray()});
+		            }
+	            }
+	            else
+	            {
+		            // This is a backup option, but is probably a bad idea. Throw exception?
+		            @this.AddBody(entity);
+	            }
             }
 
             return @this;
@@ -181,43 +190,6 @@ namespace Gx.Rs.Api.Util
         }
 
         /// <summary>
-        /// Converts the specified <see cref="IRestResponse"/> into a strongly typed REST API response.
-        /// </summary>
-        /// <typeparam name="T">The type to cast the response to. See remarks.</typeparam>
-        /// <param name="this">The <see cref="IRestResponse"/> which will be strongly typed.</param>
-        /// <returns>
-        /// A strongly typed REST API response.
-        /// </returns>
-        /// <remarks>
-        /// This method will attempt to deserialize the response data using either <see cref="DefaultXmlSerialization"/>
-        /// or <see cref="DefaultJsonSerialization"/>. The type used is determined by <see cref="GetDataFormat(IRestResponse)"/>.
-        /// </remarks>
-        public static IRestResponse<T> ToIRestResponse<T>(this IRestResponse @this)
-        {
-            IRestResponse<T> result = null;
-
-            if (@this != null)
-            {
-                result = @this.toAsyncResponse<T>();
-                var format = @this.GetDataFormat();
-
-                if (@this.Content != null)
-                {
-                    if (format == DataFormat.Json)
-                    {
-                        result.Data = JsonDeserializer.Deserialize<T>(@this.Content);
-                    }
-                    else if (format == DataFormat.Xml)
-                    {
-                        result.Data = XmlDeserializer.Deserialize<T>(@this.Content);
-                    }
-                }
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Gets the parameters from the specified collection with the specified name.
         /// </summary>
         /// <param name="this">The collection of parameters to be evaluated.</param>
@@ -241,11 +213,11 @@ namespace Gx.Rs.Api.Util
         private static DataFormat GetDataFormat(this IRestResponse @this)
         {
             DataFormat result = default(DataFormat);
-            var contentType = @this.Headers.FirstOrDefault(x => x.Name == "Content-Type");
+            var contentType = @this.ContentType;
 
-            if (contentType != null && contentType.Value != null)
+            if (contentType != null)
             {
-                result = GetDataFormat(contentType.Value.ToString(), result);
+                result = GetDataFormat(contentType, result);
             }
             else if (@this.Request != null)
             {
@@ -262,7 +234,7 @@ namespace Gx.Rs.Api.Util
 
             if (contentType != null && contentType.Value != null)
             {
-                result = GetDataFormat(contentType.Value.ToString(), @this.RequestFormat);
+                result = GetDataFormat(contentType.Value.ToString(), DataFormat.Json);
             }
 
             return result;
@@ -314,5 +286,16 @@ namespace Gx.Rs.Api.Util
 
             return @this;
         }
+
+        /// <summary>
+        /// Same as GetValues without throwing an exception if no header exists.
+        /// </summary>
+        public static IEnumerable<string> GetValuesSafe(this HttpHeaders headers, string headerName)
+        {
+            IEnumerable<string> ret;
+            if (headers.TryGetValues(headerName, out ret))
+                return ret;
+            return Enumerable.Empty<string>();
+        } 
     }
 }
