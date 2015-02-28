@@ -43,6 +43,8 @@ namespace Gx.Rs.Api.Util
         public FilterableRestClient(string baseUrl)
             : base(baseUrl)
         {
+	        IgnoreResponseStatusCode = true; // don't throw an exception on 401
+
             filters = new List<IFilter>{new ContentTypeRemover()};
 
 	        var xmlSerializer = new GedcomXmlDeserializer();
@@ -52,9 +54,13 @@ namespace Gx.Rs.Api.Util
             AddHandler(MediaTypes.GEDCOMX_XML_MEDIA_TYPE, xmlSerializer);
 			AddHandler(MediaTypes.GEDCOMX_RECORDSET_JSON_MEDIA_TYPE, jsonSerializer);
 			AddHandler(MediaTypes.GEDCOMX_RECORDSET_XML_MEDIA_TYPE, xmlSerializer);
+			AddHandler(MediaTypes.ATOM_GEDCOMX_JSON_MEDIA_TYPE, jsonSerializer);
+			AddHandler("application/x-fs-v1+json", jsonSerializer);
+			AddHandler(MediaTypes.ATOM_XML_MEDIA_TYPE, xmlSerializer);
 			AddHandler(MediaTypes.APPLICATION_JSON_TYPE, jsonSerializer);
 			AddHandler(MediaTypes.APPLICATION_XML_TYPE, xmlSerializer);
-		}
+	        AddHandler(MediaTypes.TEXT_PLAIN, new TextDeserializer());
+        }
 
         private class ContentTypeRemover : IFilter
         {
@@ -71,6 +77,16 @@ namespace Gx.Rs.Api.Util
                 }
             }
         }
+
+	    private class TextDeserializer : IDeserializer
+	    {
+		    public T Deserialize<T>(IRestResponse response)
+		    {
+			    if (typeof(T) == typeof(string))
+				    return (T)(object)Encoding.UTF8.GetString(response.RawBytes, 0, response.RawBytes.Length);
+				throw new NotImplementedException("Not sure what is using this.");
+		    }
+	    }
 
         private class GedcomJsonDeserializer : IDeserializer
         {

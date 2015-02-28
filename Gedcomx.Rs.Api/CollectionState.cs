@@ -527,21 +527,21 @@ namespace Gx.Rs.Api
                 {
                     foreach (TextValue value in description.Titles)
                     {
-                        request.AddFile("title", Encoding.UTF8.GetBytes(value.Value), null, new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
+                        request.AddFile("title", Encoding.UTF8.GetBytes(value.Value), "title.txt", new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
                     }
                 }
                 if (description.Descriptions != null)
                 {
                     foreach (TextValue value in description.Descriptions)
                     {
-                        request.AddFile("description", Encoding.UTF8.GetBytes(value.Value), null, new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
+                        request.AddFile("description", Encoding.UTF8.GetBytes(value.Value), "description.txt", new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
                     }
                 }
                 if (description.Citations != null)
                 {
                     foreach (SourceCitation citation in description.Citations)
                     {
-                        request.AddFile("citation", Encoding.UTF8.GetBytes(citation.Value), null, new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
+                        request.AddFile("citation", Encoding.UTF8.GetBytes(citation.Value), "citation.txt", new MediaTypeHeaderValue(MediaTypes.TEXT_PLAIN_TYPE));
                     }
                 }
                 if (description.MediaType != null)

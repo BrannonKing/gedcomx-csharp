@@ -309,7 +309,9 @@ namespace Gx.Rs.Api
         /// <returns>The URI of the REST API request associated to this state instance.</returns>
         public string GetUri()
         {
-            return this.Client.BaseUrl + this.Request.Resource;
+	        var resource = Request.Resource;
+	        var url = Client.BaseUrl.ToString();
+	        return Flurl.Url.Combine(url, resource);
         }
 
         /// <summary>
@@ -878,7 +880,9 @@ namespace Gx.Rs.Api
             if (response != null && response.StatusCode == HttpStatusCode.OK)
             {
                 var handler = this.Client.GetHandler(response.ContentType);
-                result = handler != null ? handler.Deserialize<TRes>(response) : default(TRes);
+				if (handler == null)
+					throw new NotSupportedException("No handler registered for the content type: " + response.ContentType);
+                result = handler.Deserialize<TRes>(response);
             }
 
             return result;
