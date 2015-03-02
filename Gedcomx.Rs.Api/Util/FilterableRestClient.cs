@@ -13,6 +13,7 @@ using Newtonsoft.Json.Serialization;
 using RestSharp.Portable;
 using RestSharp.Portable.Deserializers;
 using RestSharp.Portable.Encodings;
+using RestSharp.Portable.HttpClientImpl;
 using RestSharp.Portable.Serializers;
 
 namespace Gx.Rs.Api.Util
@@ -43,23 +44,25 @@ namespace Gx.Rs.Api.Util
         public FilterableRestClient(string baseUrl)
             : base(baseUrl)
         {
-	        IgnoreResponseStatusCode = true; // don't throw an exception on 401
+            HttpClientFactory = new FollowRedirectHttpClientFactory{AllowAutoRedirect = true};
+
+            IgnoreResponseStatusCode = true; // don't throw an exception on 401
 
             filters = new List<IFilter>{new ContentTypeRemover()};
 
-	        var xmlSerializer = new GedcomXmlDeserializer();
-	        var jsonSerializer = new GedcomJsonDeserializer();
+            var xmlSerializer = new GedcomXmlDeserializer();
+            var jsonSerializer = new GedcomJsonDeserializer();
 
             AddHandler(MediaTypes.GEDCOMX_JSON_MEDIA_TYPE, jsonSerializer);
             AddHandler(MediaTypes.GEDCOMX_XML_MEDIA_TYPE, xmlSerializer);
-			AddHandler(MediaTypes.GEDCOMX_RECORDSET_JSON_MEDIA_TYPE, jsonSerializer);
-			AddHandler(MediaTypes.GEDCOMX_RECORDSET_XML_MEDIA_TYPE, xmlSerializer);
-			AddHandler(MediaTypes.ATOM_GEDCOMX_JSON_MEDIA_TYPE, jsonSerializer);
-			AddHandler("application/x-fs-v1+json", jsonSerializer);
-			AddHandler(MediaTypes.ATOM_XML_MEDIA_TYPE, xmlSerializer);
-			AddHandler(MediaTypes.APPLICATION_JSON_TYPE, jsonSerializer);
-			AddHandler(MediaTypes.APPLICATION_XML_TYPE, xmlSerializer);
-	        AddHandler(MediaTypes.TEXT_PLAIN, new TextDeserializer());
+            AddHandler(MediaTypes.GEDCOMX_RECORDSET_JSON_MEDIA_TYPE, jsonSerializer);
+            AddHandler(MediaTypes.GEDCOMX_RECORDSET_XML_MEDIA_TYPE, xmlSerializer);
+            AddHandler(MediaTypes.ATOM_GEDCOMX_JSON_MEDIA_TYPE, jsonSerializer);
+            AddHandler("application/x-fs-v1+json", jsonSerializer);
+            AddHandler(MediaTypes.ATOM_XML_MEDIA_TYPE, xmlSerializer);
+            AddHandler(MediaTypes.APPLICATION_JSON_TYPE, jsonSerializer);
+            AddHandler(MediaTypes.APPLICATION_XML_TYPE, xmlSerializer);
+            AddHandler(MediaTypes.TEXT_PLAIN, new TextDeserializer());
         }
 
         private class ContentTypeRemover : IFilter
@@ -78,15 +81,15 @@ namespace Gx.Rs.Api.Util
             }
         }
 
-	    private class TextDeserializer : IDeserializer
-	    {
-		    public T Deserialize<T>(IRestResponse response)
-		    {
-			    if (typeof(T) == typeof(string))
-				    return (T)(object)Encoding.UTF8.GetString(response.RawBytes, 0, response.RawBytes.Length);
-				throw new NotImplementedException("Not sure what is using this.");
-		    }
-	    }
+        private class TextDeserializer : IDeserializer
+        {
+            public T Deserialize<T>(IRestResponse response)
+            {
+                if (typeof(T) == typeof(string))
+                    return (T)(object)Encoding.UTF8.GetString(response.RawBytes, 0, response.RawBytes.Length);
+                throw new NotImplementedException("Not sure what is using this.");
+            }
+        }
 
         private class GedcomJsonDeserializer : IDeserializer
         {
@@ -152,6 +155,31 @@ namespace Gx.Rs.Api.Util
             return this.Execute<T>(request).Result; // should change this wrapper to async
         }
 
-        public bool FollowRedirects { get; set; } // not sure what to do here
+        public bool FollowRedirects
+        {
+            get { return ((FollowRedirectHttpClientFactory) HttpClientFactory).AllowAutoRedirect; }
+            set { ((FollowRedirectHttpClientFactory) HttpClientFactory).AllowAutoRedirect = value; }
+        }
+
+        /// <summary>
+        /// See https://github.com/FubarDevelopment/restsharp.portable/issues/21
+        /// </summary>
+        private class FollowRedirectHttpClientFactory : DefaultHttpClientFactory
+        {
+            public bool AllowAutoRedirect { get; set; }
+
+            protected override HttpMessageHandler CreateMessageHandler(IRestClient client, IRestRequest request)
+            {
+                HttpMessageHandler messageHandler = base.CreateMessageHandler(client, request);
+                var clientHandler = messageHandler as HttpClientHandler;
+                if (clientHandler != null && clientHandler.SupportsRedirectConfiguration)
+                {
+                    clientHandler.AllowAutoRedirect = AllowAutoRedirect;
+                }
+
+                return messageHandler;
+            }
+        }
+
     }
 }
